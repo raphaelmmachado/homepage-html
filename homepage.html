@@ -4,13 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pagina Inicial</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="icon"
       type="image/svg+xml"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='white' stroke='%23000' stroke-width='0.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l-2 0l9 -9l9 9l-2 0'/%3E%3Cpath d='M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7'/%3E%3Cpath d='M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6'/%3E%3C/svg%3E"
     />
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
@@ -28,15 +27,21 @@
         margin: 0;
         width: 100%;
       }
+      /* Estilos para o drag and drop */
+      .dragging {
+        opacity: 0.5;
+      }
+      .drag-over {
+        border: 2px dashed #3b82f6; /* Borda azul para indicar o local de soltar */
+      }
     </style>
   </head>
-  <body class="bg-gray-100 text-gray-800">
-    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl">
+  <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl flex-grow">
       <header class="text-center mb-8">
         <h1 class="text-4xl font-bold text-gray-900">Pagina Inicial</h1>
         <p class="text-gray-600 mt-2">Suas categorias de sites importantes.</p>
 
-        <!-- ALTERAÇÃO: Barra de pesquisa adicionada -->
         <div class="mt-6 w-full max-w-lg mx-auto">
           <input
             type="search"
@@ -51,11 +56,28 @@
         id="containers-wrapper"
         class="flex flex-wrap gap-6 justify-center md:justify-start"
       >
-        <!-- As categorias de favoritos serão inseridas aqui pelo JavaScript -->
+        <!-- As categorias e o botão de adicionar serão inseridos aqui -->
       </div>
-
-      <!-- Placeholder para adicionar nova categoria -->
     </div>
+
+    <!-- ALTERAÇÃO: Removido 'sticky bottom-0' do footer -->
+    <footer class="bg-white p-4 mt-8 border-t border-gray-200">
+      <div class="container mx-auto flex justify-center items-center gap-4">
+        <button
+          id="import-btn"
+          class="bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition-colors"
+        >
+          Importar Favoritos
+        </button>
+        <button
+          id="export-btn"
+          class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors"
+        >
+          Salvar Favoritos
+        </button>
+      </div>
+      <input type="file" id="import-file-input" class="hidden" accept=".json" />
+    </footer>
 
     <!-- Modal para adicionar favorito (sem alterações) -->
     <div
@@ -118,23 +140,21 @@
         let containers = [];
         let bookmarks = [];
         let activeContainerId = null;
+        let draggedContainerId = null;
 
         const bookmarksStorageKey = "my-homepage-bookmarks-v2";
         const containersStorageKey = "my-homepage-containers-v2";
 
         // --- ELEMENTOS DO DOM ---
         const containersWrapper = document.getElementById("containers-wrapper");
-        const addContainerSection = document.getElementById(
-          "add-container-section"
-        );
         const dialog = document.getElementById("add-bookmark-dialog");
         const dialogForm = document.getElementById("add-bookmark-form");
         const cancelBtn = document.getElementById("cancel-add-bookmark-btn");
-        const searchBar = document.getElementById("search-bar"); // ALTERAÇÃO: Pega o elemento da barra de pesquisa
-
+        const searchBar = document.getElementById("search-bar");
         const importBtn = document.getElementById("import-btn");
         const exportBtn = document.getElementById("export-btn");
         const importFileInput = document.getElementById("import-file-input");
+
         // --- FUNÇÕES DE LÓGICA ---
 
         const saveData = () => {
@@ -155,20 +175,17 @@
           bookmarks = savedBookmarks ? JSON.parse(savedBookmarks) : [];
         };
 
-        // ALTERAÇÃO: A função render agora aceita um termo de pesquisa
         const render = (searchTerm = "") => {
           const lowerCaseSearchTerm = searchTerm.toLowerCase();
           containersWrapper.innerHTML = "";
 
           containers.forEach((container) => {
-            // Filtra os favoritos desta categoria que correspondem à pesquisa
             const containerBookmarks = bookmarks.filter(
               (b) =>
                 b.containerId === container.id &&
                 b.name.toLowerCase().includes(lowerCaseSearchTerm)
             );
 
-            // Só renderiza o container se não houver pesquisa ou se ele tiver favoritos correspondentes
             if (!lowerCaseSearchTerm || containerBookmarks.length > 0) {
               containersWrapper.appendChild(
                 createContainerElement(container, containerBookmarks)
@@ -176,15 +193,10 @@
             }
           });
 
-          // Exibe uma mensagem se a pesquisa não retornar resultados
           if (containersWrapper.innerHTML === "" && lowerCaseSearchTerm) {
-            containersWrapper.innerHTML = `<p class="text-center text-gray-500">Nenhum favorito encontrado para "${searchTerm}".</p>`;
+            containersWrapper.innerHTML = `<p class="text-center text-gray-500 w-full">Nenhum favorito encontrado para "${searchTerm}".</p>`;
           }
 
-          // Esconde a seção de adicionar categoria durante uma pesquisa
-          addContainerSection.style.display = lowerCaseSearchTerm
-            ? "none"
-            : "block";
           if (!lowerCaseSearchTerm) {
             containersWrapper.appendChild(createAddCategoryBox());
           }
@@ -214,7 +226,7 @@
             .addEventListener("click", () => {
               bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
               saveData();
-              render(searchBar.value); // Re-renderiza mantendo o filtro atual
+              render(searchBar.value);
             });
 
           return element;
@@ -227,40 +239,32 @@
           element.setAttribute("draggable", "true");
           element.dataset.id = container.id;
 
-          // --- Eventos de Drag and Drop ---
           element.addEventListener("dragstart", (e) => {
             draggedContainerId = container.id;
             setTimeout(() => e.target.classList.add("dragging"), 0);
           });
-
-          element.addEventListener("dragend", (e) => {
-            e.target.classList.remove("dragging");
-          });
-
+          element.addEventListener("dragend", (e) =>
+            e.target.classList.remove("dragging")
+          );
           element.addEventListener("dragover", (e) => {
             e.preventDefault();
             e.target.closest(".group").classList.add("drag-over");
           });
-
-          element.addEventListener("dragleave", (e) => {
-            e.target.closest(".group").classList.remove("drag-over");
-          });
-
+          element.addEventListener("dragleave", (e) =>
+            e.target.closest(".group").classList.remove("drag-over")
+          );
           element.addEventListener("drop", (e) => {
             e.preventDefault();
             e.target.closest(".group").classList.remove("drag-over");
             if (draggedContainerId === container.id) return;
-
             const draggedIndex = containers.findIndex(
               (c) => c.id === draggedContainerId
             );
             const targetIndex = containers.findIndex(
               (c) => c.id === container.id
             );
-
             const [draggedItem] = containers.splice(draggedIndex, 1);
             containers.splice(targetIndex, 0, draggedItem);
-
             saveData();
             render(searchBar.value);
           });
@@ -278,20 +282,17 @@
             input.type = "text";
             input.value = container.title;
             input.className = "text-xl font-bold text-gray-800 title-input";
-
             const saveEdit = () => {
               const newTitle = input.value.trim();
               if (newTitle) container.title = newTitle;
               saveData();
               render(searchBar.value);
             };
-
             input.addEventListener("blur", saveEdit);
             input.addEventListener("keydown", (e) => {
               if (e.key === "Enter") input.blur();
               if (e.key === "Escape") render(searchBar.value);
             });
-
             titleElement.replaceWith(input);
             input.focus();
             input.select();
@@ -323,20 +324,15 @@
           const grid = document.createElement("div");
           grid.className = "flex flex-wrap gap-x-4 gap-y-6";
 
-          containerBookmarks.forEach((bookmark) => {
-            grid.appendChild(createBookmarkElement(bookmark));
-          });
+          containerBookmarks.forEach((bookmark) =>
+            grid.appendChild(createBookmarkElement(bookmark))
+          );
 
           const addBookmarkBox = document.createElement("div");
           let classString =
             "flex flex-col items-center justify-center p-2 cursor-pointer group transition-opacity duration-300";
-
-          // ALTERAÇÃO: Lógica de visibilidade condicional
-          if (containerBookmarks.length > 0) {
-            // Se não estiver vazia, fica invisível e 100% no hover
+          if (containerBookmarks.length > 0)
             classString += " opacity-0 group-hover:opacity-100";
-          }
-          // Se estiver vazia, nenhuma classe de opacidade é adicionada, então fica 100% visível por padrão.
 
           addBookmarkBox.className = classString;
           addBookmarkBox.innerHTML = `
@@ -356,8 +352,6 @@
           element.appendChild(grid);
           return element;
         };
-
-        // Esta função substitui a antiga renderAddCategoryUI()
 
         const createAddCategoryBox = () => {
           const addContainerBox = document.createElement("div");
@@ -401,22 +395,17 @@
 
         // --- MANIPULADORES DE EVENTOS ---
 
-        // ALTERAÇÃO: Adiciona o listener para a barra de pesquisa
-        searchBar.addEventListener("input", (e) => {
-          render(e.target.value);
-        });
+        searchBar.addEventListener("input", (e) => render(e.target.value));
 
         dialogForm.addEventListener("submit", (e) => {
           e.preventDefault();
           const name = document.getElementById("bookmark-name").value.trim();
           const url = document.getElementById("bookmark-url").value.trim();
-
           if (name && url && activeContainerId) {
             const cleanedUrl = url
               .replace(/^(?:https?:\/\/)?/i, "")
               .replace(/^www\./i, "");
             const finalUrl = "https://" + cleanedUrl;
-
             bookmarks.push({
               id: crypto.randomUUID(),
               name,
@@ -425,7 +414,6 @@
             });
             saveData();
             render(searchBar.value);
-
             dialogForm.reset();
             dialog.classList.add("hidden");
             activeContainerId = null;
@@ -442,18 +430,60 @@
           if (e.target === dialog) cancelBtn.click();
         });
 
+        exportBtn.addEventListener("click", () => {
+          const dataStr = JSON.stringify({ containers, bookmarks }, null, 2);
+          const dataBlob = new Blob([dataStr], { type: "application/json" });
+          const url = URL.createObjectURL(dataBlob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "meus_favoritos_backup.json";
+          link.click();
+          URL.revokeObjectURL(url);
+        });
+
+        importBtn.addEventListener("click", () => importFileInput.click());
+
+        importFileInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const data = JSON.parse(event.target.result);
+              if (
+                data &&
+                Array.isArray(data.containers) &&
+                Array.isArray(data.bookmarks)
+              ) {
+                if (
+                  confirm(
+                    "Isso irá substituir todos os seus favoritos e categorias atuais. Deseja continuar?"
+                  )
+                ) {
+                  containers = data.containers;
+                  bookmarks = data.bookmarks;
+                  saveData();
+                  render();
+                }
+              } else {
+                alert("Arquivo de backup inválido.");
+              }
+            } catch (error) {
+              alert(
+                "Erro ao ler o arquivo. Certifique-se de que é um backup válido."
+              );
+              console.error("Erro na importação:", error);
+            }
+          };
+          reader.readAsText(file);
+          e.target.value = ""; // Limpa o input para permitir importar o mesmo arquivo novamente
+        });
+
         // --- INICIALIZAÇÃO ---
         loadData();
         render();
       });
     </script>
-    <!-- NOVO: Footer com botões de importação e exportação -->
-    <footer class="bg-white p-4 mt-8 border-t border-gray-200">
-      <div class="container mx-auto flex justify-center items-center gap-4">
-        <button id="import-btn" ...>Importar Favoritos</button>
-        <button id="export-btn" ...>Salvar Favoritos</button>
-      </div>
-      <input type="file" id="import-file-input" class="hidden" accept=".json" />
-    </footer>
   </body>
 </html>
