@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meus Favoritos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Estilo para garantir que o input de edição tenha a mesma aparência do título */
+      .title-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl">
+      <header class="text-center mb-8">
+        <!-- <h1 class="text-4xl font-bold text-gray-900">Meus Favoritos</h1>
+        <p class="text-gray-600 mt-2">Suas categorias de sites importantes.</p> -->
+
+        <!-- ALTERAÇÃO: Barra de pesquisa adicionada -->
+        <div class="mt-6 w-full max-w-lg mx-auto">
+          <input
+            type="search"
+            id="search-bar"
+            placeholder="Pesquisar favoritos..."
+            class="w-full px-4 py-2 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </header>
+
+      <div
+        id="containers-wrapper"
+        class="flex flex-wrap gap-6 justify-center md:justify-start"
+      >
+        <!-- As categorias de favoritos serão inseridas aqui pelo JavaScript -->
+      </div>
+
+      <!-- Placeholder para adicionar nova categoria -->
+      <div
+        id="add-container-section"
+        class="mt-6 bg-gray-50/50 border-2 border-dashed border-gray-300 p-4 rounded-lg w-full hover:bg-gray-50 transition-colors"
+      >
+        <!-- O conteúdo aqui será gerenciado pelo JavaScript -->
+      </div>
+    </div>
+
+    <!-- Modal para adicionar favorito (sem alterações) -->
+    <div
+      id="add-bookmark-dialog"
+      class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 hidden"
+    >
+      <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-4">
+        <h3 class="text-xl font-semibold mb-4">Adicionar Novo Favorito</h3>
+        <form id="add-bookmark-form">
+          <div class="mb-4">
+            <label
+              for="bookmark-name"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Nome do Site</label
+            >
+            <input
+              type="text"
+              id="bookmark-name"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: Google"
+            />
+          </div>
+          <div class="mb-6">
+            <label
+              for="bookmark-url"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Link (URL)</label
+            >
+            <input
+              type="text"
+              id="bookmark-url"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Ex: google.com"
+            />
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button
+              type="button"
+              id="cancel-add-bookmark-btn"
+              class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700"
+            >
+              Salvar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- ESTADO E CHAVES DO LOCALSTORAGE ---
+        let containers = [];
+        let bookmarks = [];
+        let activeContainerId = null;
+
+        const bookmarksStorageKey = "my-homepage-bookmarks-v2";
+        const containersStorageKey = "my-homepage-containers-v2";
+
+        // --- ELEMENTOS DO DOM ---
+        const containersWrapper = document.getElementById("containers-wrapper");
+        const addContainerSection = document.getElementById(
+          "add-container-section"
+        );
+        const dialog = document.getElementById("add-bookmark-dialog");
+        const dialogForm = document.getElementById("add-bookmark-form");
+        const cancelBtn = document.getElementById("cancel-add-bookmark-btn");
+        const searchBar = document.getElementById("search-bar"); // ALTERAÇÃO: Pega o elemento da barra de pesquisa
+
+        // --- FUNÇÕES DE LÓGICA ---
+
+        const saveData = () => {
+          localStorage.setItem(
+            containersStorageKey,
+            JSON.stringify(containers)
+          );
+          localStorage.setItem(bookmarksStorageKey, JSON.stringify(bookmarks));
+        };
+
+        const loadData = () => {
+          const savedContainers = localStorage.getItem(containersStorageKey);
+          const savedBookmarks = localStorage.getItem(bookmarksStorageKey);
+
+          containers = savedContainers
+            ? JSON.parse(savedContainers)
+            : [{ id: crypto.randomUUID(), title: "Categoria" }];
+          bookmarks = savedBookmarks ? JSON.parse(savedBookmarks) : [];
+        };
+
+        // ALTERAÇÃO: A função render agora aceita um termo de pesquisa
+        const render = (searchTerm = "") => {
+          const lowerCaseSearchTerm = searchTerm.toLowerCase();
+          containersWrapper.innerHTML = "";
+
+          containers.forEach((container) => {
+            // Filtra os favoritos desta categoria que correspondem à pesquisa
+            const containerBookmarks = bookmarks.filter(
+              (b) =>
+                b.containerId === container.id &&
+                b.name.toLowerCase().includes(lowerCaseSearchTerm)
+            );
+
+            // Só renderiza o container se não houver pesquisa ou se ele tiver favoritos correspondentes
+            if (!lowerCaseSearchTerm || containerBookmarks.length > 0) {
+              containersWrapper.appendChild(
+                createContainerElement(container, containerBookmarks)
+              );
+            }
+          });
+
+          // Exibe uma mensagem se a pesquisa não retornar resultados
+          if (containersWrapper.innerHTML === "" && lowerCaseSearchTerm) {
+            containersWrapper.innerHTML = `<p class="text-center text-gray-500">Nenhum favorito encontrado para "${searchTerm}".</p>`;
+          }
+
+          // Esconde a seção de adicionar categoria durante uma pesquisa
+          addContainerSection.style.display = lowerCaseSearchTerm
+            ? "none"
+            : "block";
+          if (!lowerCaseSearchTerm) {
+            renderAddCategoryUI();
+          }
+        };
+
+        // --- FUNÇÕES DE CRIAÇÃO DE ELEMENTOS ---
+
+        const createBookmarkElement = (bookmark) => {
+          const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
+          const fallbackIcon = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5YWEzYjgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxsaW5lIHgxPSIyIiB5MT0iMTIiIHgyPSIyMiIgeTI9IjEyIi8+PHBhdGggZD0iTTEyIDJhMTUuMyAxNS4zIDAgMCAxIDQgMTAgMTUuMyAxNS4zIDAgMCAxLTQgMTAgMTUuMyAxNS4zIDAgMCAxLTQtMTAgMTUuMyAxNS4zIDAgMCAxIDQtMTAgeiIvPjwvc3ZnPg==`;
+
+          const element = document.createElement("div");
+          element.className = "relative flex flex-col items-center group";
+
+          element.innerHTML = `
+                    <a href="${bookmark.url}" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
+                        <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-16 h-16 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}'; this.classList.add('p-3', 'bg-gray-200');" />
+                        <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
+                    </a>
+                    <button class="remove-bookmark-btn absolute top-0 right-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 focus:opacity-100" aria-label="Remover ${bookmark.name}">
+                        &times;
+                    </button>
+                `;
+
+          element
+            .querySelector(".remove-bookmark-btn")
+            .addEventListener("click", () => {
+              bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
+              saveData();
+              render(searchBar.value); // Re-renderiza mantendo o filtro atual
+            });
+
+          return element;
+        };
+
+        const createContainerElement = (container, containerBookmarks) => {
+          const element = document.createElement("div");
+          element.className =
+            "bg-gray-50 p-4 rounded-lg shadow-md relative group";
+
+          const header = document.createElement("div");
+          header.className = "flex justify-between items-center mb-4";
+
+          const titleElement = document.createElement("h2");
+          titleElement.className =
+            "text-xl font-bold text-gray-800 cursor-pointer flex-grow";
+          titleElement.textContent = container.title;
+
+          titleElement.addEventListener("click", () => {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = container.title;
+            input.className = "text-xl font-bold text-gray-800 title-input";
+
+            const saveEdit = () => {
+              const newTitle = input.value.trim();
+              if (newTitle) container.title = newTitle;
+              saveData();
+              render(searchBar.value);
+            };
+
+            input.addEventListener("blur", saveEdit);
+            input.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") input.blur();
+              if (e.key === "Escape") render(searchBar.value);
+            });
+
+            titleElement.replaceWith(input);
+            input.focus();
+            input.select();
+          });
+
+          const removeContainerBtn = document.createElement("button");
+          removeContainerBtn.className =
+            "absolute top-3 right-3 w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white";
+          removeContainerBtn.innerHTML = "&times;";
+          removeContainerBtn.ariaLabel = `Remover categoria ${container.title}`;
+          removeContainerBtn.addEventListener("click", () => {
+            if (
+              confirm(
+                `Tem certeza que deseja remover a categoria "${container.title}" e todos os seus favoritos?`
+              )
+            ) {
+              containers = containers.filter((c) => c.id !== container.id);
+              bookmarks = bookmarks.filter(
+                (b) => b.containerId !== container.id
+              );
+              saveData();
+              render(searchBar.value);
+            }
+          });
+
+          header.appendChild(titleElement);
+          element.appendChild(removeContainerBtn);
+
+          const grid = document.createElement("div");
+          grid.className = "flex flex-wrap gap-x-4 gap-y-6";
+
+          containerBookmarks.forEach((bookmark) => {
+            grid.appendChild(createBookmarkElement(bookmark));
+          });
+
+          const addBookmarkBox = document.createElement("div");
+          addBookmarkBox.className =
+            "flex flex-col items-center justify-center p-2 cursor-pointer group";
+          addBookmarkBox.innerHTML = `
+                    <div class="flex items-center justify-center w-16 h-16 rounded-md border-2 border-dashed border-gray-400 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600 group-hover:border-gray-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <span class="mt-2 text-sm font-medium text-gray-700">Adicionar</span>
+                `;
+          addBookmarkBox.addEventListener("click", () => {
+            activeContainerId = container.id;
+            dialog.classList.remove("hidden");
+            document.getElementById("bookmark-name").focus();
+          });
+          grid.appendChild(addBookmarkBox);
+
+          element.appendChild(header);
+          element.appendChild(grid);
+          return element;
+        };
+
+        const renderAddCategoryUI = () => {
+          addContainerSection.innerHTML = "";
+          const addTitle = document.createElement("h2");
+          addTitle.className =
+            "text-xl font-bold text-gray-500 cursor-pointer text-center";
+          addTitle.textContent = "+ Adicionar Categoria";
+
+          addTitle.addEventListener("click", () => {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "Nome da Nova Categoria";
+            input.className =
+              "text-xl font-bold text-gray-800 title-input text-center";
+
+            const saveNew = () => {
+              const title = input.value.trim();
+              if (title) {
+                containers.push({ id: crypto.randomUUID(), title });
+                saveData();
+              }
+              render();
+            };
+
+            input.addEventListener("blur", saveNew);
+            input.addEventListener("keydown", (e) => {
+              if (e.key === "Enter") input.blur();
+              if (e.key === "Escape") render();
+            });
+
+            addTitle.replaceWith(input);
+            input.focus();
+          });
+
+          addContainerSection.appendChild(addTitle);
+        };
+
+        // --- MANIPULADORES DE EVENTOS ---
+
+        // ALTERAÇÃO: Adiciona o listener para a barra de pesquisa
+        searchBar.addEventListener("input", (e) => {
+          render(e.target.value);
+        });
+
+        dialogForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("bookmark-name").value.trim();
+          const url = document.getElementById("bookmark-url").value.trim();
+
+          if (name && url && activeContainerId) {
+            const cleanedUrl = url
+              .replace(/^(?:https?:\/\/)?/i, "")
+              .replace(/^www\./i, "");
+            const finalUrl = "https://" + cleanedUrl;
+
+            bookmarks.push({
+              id: crypto.randomUUID(),
+              name,
+              url: finalUrl,
+              containerId: activeContainerId,
+            });
+            saveData();
+            render(searchBar.value);
+
+            dialogForm.reset();
+            dialog.classList.add("hidden");
+            activeContainerId = null;
+          }
+        });
+
+        cancelBtn.addEventListener("click", () => {
+          dialogForm.reset();
+          dialog.classList.add("hidden");
+          activeContainerId = null;
+        });
+
+        dialog.addEventListener("click", (e) => {
+          if (e.target === dialog) cancelBtn.click();
+        });
+
+        // --- INICIALIZAÇÃO ---
+        loadData();
+        render();
+      });
+    </script>
+  </body>
+</html>
