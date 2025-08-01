@@ -33,8 +33,8 @@
   <body class="bg-gray-100 text-gray-800">
     <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl">
       <header class="text-center mb-8">
-        <!-- <h1 class="text-4xl font-bold text-gray-900">Meus Favoritos</h1>
-        <p class="text-gray-600 mt-2">Suas categorias de sites importantes.</p> -->
+        <h1 class="text-4xl font-bold text-gray-900">Pagina Inicial</h1>
+        <p class="text-gray-600 mt-2">Suas categorias de sites importantes.</p>
 
         <!-- ALTERAÇÃO: Barra de pesquisa adicionada -->
         <div class="mt-6 w-full max-w-lg mx-auto">
@@ -55,12 +55,6 @@
       </div>
 
       <!-- Placeholder para adicionar nova categoria -->
-      <div
-        id="add-container-section"
-        class="mt-6 bg-gray-50/50 border-2 border-dashed border-gray-300 p-4 rounded-lg w-full hover:bg-gray-50 transition-colors"
-      >
-        <!-- O conteúdo aqui será gerenciado pelo JavaScript -->
-      </div>
     </div>
 
     <!-- Modal para adicionar favorito (sem alterações) -->
@@ -138,6 +132,9 @@
         const cancelBtn = document.getElementById("cancel-add-bookmark-btn");
         const searchBar = document.getElementById("search-bar"); // ALTERAÇÃO: Pega o elemento da barra de pesquisa
 
+        const importBtn = document.getElementById("import-btn");
+        const exportBtn = document.getElementById("export-btn");
+        const importFileInput = document.getElementById("import-file-input");
         // --- FUNÇÕES DE LÓGICA ---
 
         const saveData = () => {
@@ -189,7 +186,7 @@
             ? "none"
             : "block";
           if (!lowerCaseSearchTerm) {
-            renderAddCategoryUI();
+            containersWrapper.appendChild(createAddCategoryBox());
           }
         };
 
@@ -360,14 +357,18 @@
           return element;
         };
 
-        const renderAddCategoryUI = () => {
-          addContainerSection.innerHTML = "";
-          const addTitle = document.createElement("h2");
-          addTitle.className =
-            "text-xl font-bold text-gray-500 cursor-pointer text-center";
-          addTitle.textContent = "+ Adicionar Categoria";
+        // Esta função substitui a antiga renderAddCategoryUI()
 
-          addTitle.addEventListener("click", () => {
+        const createAddCategoryBox = () => {
+          const addContainerBox = document.createElement("div");
+          addContainerBox.className =
+            "bg-gray-50/50 border-2 border-dashed border-gray-300 p-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer min-h-[148px]";
+
+          const addTitle = document.createElement("h2");
+          addTitle.className = "text-xl font-bold text-gray-500 text-center";
+          addTitle.textContent = "+ Criar Categoria";
+
+          addContainerBox.addEventListener("click", () => {
             const input = document.createElement("input");
             input.type = "text";
             input.placeholder = "Nome da Nova Categoria";
@@ -389,11 +390,13 @@
               if (e.key === "Escape") render();
             });
 
-            addTitle.replaceWith(input);
+            addContainerBox.innerHTML = "";
+            addContainerBox.appendChild(input);
             input.focus();
           });
 
-          addContainerSection.appendChild(addTitle);
+          addContainerBox.appendChild(addTitle);
+          return addContainerBox;
         };
 
         // --- MANIPULADORES DE EVENTOS ---
@@ -444,5 +447,13 @@
         render();
       });
     </script>
+    <!-- NOVO: Footer com botões de importação e exportação -->
+    <footer class="bg-white p-4 mt-8 border-t border-gray-200">
+      <div class="container mx-auto flex justify-center items-center gap-4">
+        <button id="import-btn" ...>Importar Favoritos</button>
+        <button id="export-btn" ...>Salvar Favoritos</button>
+      </div>
+      <input type="file" id="import-file-input" class="hidden" accept=".json" />
+    </footer>
   </body>
 </html>
