@@ -220,7 +220,47 @@
         const createContainerElement = (container, containerBookmarks) => {
           const element = document.createElement("div");
           element.className =
-            "bg-gray-50 p-4 rounded-lg shadow-md relative group";
+            "bg-gray-50 p-4 rounded-lg shadow-md relative group transition-all";
+          element.setAttribute("draggable", "true");
+          element.dataset.id = container.id;
+
+          // --- Eventos de Drag and Drop ---
+          element.addEventListener("dragstart", (e) => {
+            draggedContainerId = container.id;
+            setTimeout(() => e.target.classList.add("dragging"), 0);
+          });
+
+          element.addEventListener("dragend", (e) => {
+            e.target.classList.remove("dragging");
+          });
+
+          element.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.target.closest(".group").classList.add("drag-over");
+          });
+
+          element.addEventListener("dragleave", (e) => {
+            e.target.closest(".group").classList.remove("drag-over");
+          });
+
+          element.addEventListener("drop", (e) => {
+            e.preventDefault();
+            e.target.closest(".group").classList.remove("drag-over");
+            if (draggedContainerId === container.id) return;
+
+            const draggedIndex = containers.findIndex(
+              (c) => c.id === draggedContainerId
+            );
+            const targetIndex = containers.findIndex(
+              (c) => c.id === container.id
+            );
+
+            const [draggedItem] = containers.splice(draggedIndex, 1);
+            containers.splice(targetIndex, 0, draggedItem);
+
+            saveData();
+            render(searchBar.value);
+          });
 
           const header = document.createElement("div");
           header.className = "flex justify-between items-center mb-4";
@@ -260,10 +300,18 @@
           removeContainerBtn.innerHTML = "&times;";
           removeContainerBtn.ariaLabel = `Remover categoria ${container.title}`;
           removeContainerBtn.addEventListener("click", () => {
-            containers = containers.filter((c) => c.id !== container.id);
-            bookmarks = bookmarks.filter((b) => b.containerId !== container.id);
-            saveData();
-            render(searchBar.value);
+            if (
+              confirm(
+                `Tem certeza que deseja remover a categoria "${container.title}" e todos os seus favoritos?`
+              )
+            ) {
+              containers = containers.filter((c) => c.id !== container.id);
+              bookmarks = bookmarks.filter(
+                (b) => b.containerId !== container.id
+              );
+              saveData();
+              render(searchBar.value);
+            }
           });
 
           header.appendChild(titleElement);
@@ -277,8 +325,17 @@
           });
 
           const addBookmarkBox = document.createElement("div");
-          addBookmarkBox.className =
-            "flex flex-col items-center justify-center p-2 cursor-pointer group";
+          let classString =
+            "flex flex-col items-center justify-center p-2 cursor-pointer group transition-opacity duration-300";
+
+          // ALTERAÇÃO: Lógica de visibilidade condicional
+          if (containerBookmarks.length > 0) {
+            // Se não estiver vazia, fica invisível e 100% no hover
+            classString += " opacity-0 group-hover:opacity-100";
+          }
+          // Se estiver vazia, nenhuma classe de opacidade é adicionada, então fica 100% visível por padrão.
+
+          addBookmarkBox.className = classString;
           addBookmarkBox.innerHTML = `
                     <div class="flex items-center justify-center w-10 h-10 rounded-md border-2 border-dashed border-gray-400 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600 group-hover:border-gray-600 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
