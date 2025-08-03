@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelBtn = document.getElementById("cancel-bookmark-btn");
   const webSearchBar = document.getElementById("web-search-bar");
   const webSearchForm = document.getElementById("web-search-form");
+  const webSearchSubmitBtn = document.getElementById("web-search-submit-btn");
   const engineSelectorBtn = document.getElementById("engine-selector-btn");
   const engineOptions = document.getElementById("engine-options");
   const importBtn = document.getElementById("import-btn");
@@ -363,6 +364,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  webSearchSubmitBtn.addEventListener("mousedown", (e) => {
+    const query = webSearchBar.value.trim();
+    if (e.button === 1) {
+      // Botão do meio
+      e.preventDefault();
+      if (query) {
+        window.open(
+          searchEngines[activeSearchEngine].url + encodeURIComponent(query),
+          "_blank"
+        );
+      }
+    }
+    if (e.button === 0) {
+      // Botão esquerdo
+      e.preventDefault();
+      if (query) {
+        // ALTERAÇÃO: Trocado window.open por window.location.href
+        window.location.href =
+          searchEngines[activeSearchEngine].url + encodeURIComponent(query);
+      }
+    }
+  });
   engineSelectorBtn.addEventListener("click", () =>
     engineOptions.classList.toggle("hidden")
   );
