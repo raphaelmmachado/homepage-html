@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     element.innerHTML = `
                 <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
-                    <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-10 h-10 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}'; this.classList.add('p-3', 'bg-gray-200');" />
+                    <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}'; this.classList.add('p-3', 'bg-gray-200');" />
                     <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
                 </a>
                 <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
