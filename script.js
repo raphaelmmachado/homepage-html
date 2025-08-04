@@ -297,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "flex flex-col items-center justify-center p-2 cursor-pointer opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
     }
     addBookmarkBox.innerHTML = `
-                <div class="flex items-center justify-center w-10 h-10 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
+                <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </div>
                 <span class="mt-2 text-sm font-medium text-gray-700">Adicionar</span>
