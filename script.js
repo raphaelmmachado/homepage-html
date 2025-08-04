@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createBookmarkElement = (bookmark) => {
     const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
-    const fallbackIcon = `https://placehold.co/32x32/eeeeee/999999?text=?`;
+    const fallbackIcon = `https://placehold.co/32x32/eeeeee/999999?text=fav`;
     const element = document.createElement("div");
     element.className = "relative flex flex-col items-center group/item";
     element.setAttribute("draggable", "true");
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const createContainerElement = (container, containerBookmarks) => {
     const element = document.createElement("div");
     element.className =
-      "bg-gray-50 p-4 rounded-lg shadow-md relative group/category transition-all";
+      "bg-gray-50 p-4 rounded-lg shadow-md relative group/category transition-all hover:cursor-grab";
     element.setAttribute("draggable", "true");
     element.dataset.id = container.id;
 
