@@ -112,15 +112,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createBookmarkElement = (bookmark) => {
     const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
-    const fallbackIcon = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM5YWEzYjgiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxsaW5lIHgxPSIyIiB5MT0iMTIiIHgyPSIyMiIgeTI9IjEyIi8+PHBhdGggZD0iTTEyIDJhMTUuMyAxNS4zIDAgMCAxIDQgMTAgMTUuMyAxNS4zIDAgMCAxLTQgMTAgMTUuMyAxNS4zIDAgMCAxLTQtMTAgMTUuMyAxNS4zIDAgMCAxIDQtMTAgeiIvPjwvc3ZnPg==`;
+    const fallbackIcon = `https://placehold.co/32x32/eeeeee/999999?text=?`;
     const element = document.createElement("div");
     element.className = "relative flex flex-col items-center group/item";
     element.setAttribute("draggable", "true");
     element.dataset.id = bookmark.id;
 
     element.innerHTML = `
-                <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
-                    <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}'; this.classList.add('p-3', 'bg-gray-200');" />
+                <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg transition-colors duration-200 w-full">
+                    <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}';" />
                     <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
                 </a>
                 <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
@@ -300,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 </div>
-                <span class="mt-2 text-sm font-medium text-gray-700">Adicionar</span>
+                <span class="mt-2 text-sm font-medium text-gray-500">Adicionar</span>
             `;
     addBookmarkBox.addEventListener("click", () => {
       dialogTitle.textContent = "Adicionar Novo Favorito";
