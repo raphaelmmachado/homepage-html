@@ -331,11 +331,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const addBookmarkBox = document.createElement("div");
 
     if (currentLayout === "list") {
-      addBookmarkBox.className =
-        "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500";
+      if (hasBookmarks) {
+        addBookmarkBox.className =
+          "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500 opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
+      } else {
+        addBookmarkBox.className =
+          "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500";
+      }
       addBookmarkBox.innerHTML = `
                     <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span class="text-sm">Adicionar Favorito</span>
+                    <span class="text-sm">Adicionar</span>
                 `;
     } else {
       if (hasBookmarks) {
@@ -354,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     addBookmarkBox.addEventListener("click", () => {
-      dialogTitle.textContent = "Adicionar Novo Favorito";
+      dialogTitle.textContent = "Adicionar novo site favorito";
       dialogForm.reset();
       activeContainerId = containerId;
       dialog.classList.remove("hidden");
@@ -365,12 +370,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const createAddCategoryBox = () => {
     const addContainerBox = document.createElement("div");
     addContainerBox.className =
-      "bg-gray-50/50 border-2 border-dashed border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer min-h-[148px]";
+      "cursor-pointer bg-gray-50/50 border-2 border-dashed border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center min-h-[148px]";
 
     const addTitle = document.createElement("h2");
-    addTitle.className = "text-xl font-bold text-gray-300 text-center";
+    addTitle.className = "text-xl font-bold text-gray-400 text-center";
     addTitle.textContent = "+ Criar Categoria";
-    addTitle.addEventListener("click", () => {
+    addContainerBox.addEventListener("click", () => {
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = "Nome da Nova Categoria";
