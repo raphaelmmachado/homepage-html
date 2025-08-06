@@ -6,10 +6,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let draggedContainerId = null;
   let draggedBookmarkId = null;
   let activeSearchEngine = "google";
+  let currentLayout = "grid";
 
   const bookmarksStorageKey = "my-homepage-bookmarks-v2";
   const containersStorageKey = "my-homepage-containers-v2";
   const searchEngineStorageKey = "my-homepage-search-engine";
+  const layoutStorageKey = "my-homepage-layout";
 
   // --- ELEMENTOS DO DOM ---
   const containersWrapper = document.getElementById("containers-wrapper");
@@ -28,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const importBtn = document.getElementById("import-btn");
   const exportBtn = document.getElementById("export-btn");
   const importFileInput = document.getElementById("import-file-input");
+  const layoutToggleBtn = document.getElementById("layout-toggle-btn");
+  const gridIcon = document.getElementById("layout-icon-grid");
+  const listIcon = document.getElementById("layout-icon-list");
 
   // --- DEFINIÇÕES DE MECANISMOS DE BUSCA ---
   const searchEngines = {
@@ -53,27 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedContainers = localStorage.getItem(containersStorageKey);
     const savedBookmarks = localStorage.getItem(bookmarksStorageKey);
     const savedEngine = localStorage.getItem(searchEngineStorageKey);
+    const savedLayout = localStorage.getItem(layoutStorageKey);
 
     containers = savedContainers
       ? JSON.parse(savedContainers)
-      : [{ id: crypto.randomUUID(), title: "AI" }];
-    bookmarks = savedBookmarks
-      ? JSON.parse(savedBookmarks)
-      : [
-          {
-            id: crypto.randomUUID(),
-            name: "ChatGPT",
-            url: "https://chatgpt.com/",
-            containerId: containers[0].id,
-          },
-          {
-            id: crypto.randomUUID(),
-            name: "Grok",
-            url: "https://www.grok.com",
-            containerId: containers[0].id,
-          },
-        ];
-    activeSearchEngine = savedEngine || "brave";
+      : [{ id: crypto.randomUUID(), title: "Categoria" }];
+    bookmarks = savedBookmarks ? JSON.parse(savedBookmarks) : [];
+    activeSearchEngine = savedEngine || "google";
+    currentLayout = savedLayout || "grid";
   };
 
   const render = (searchTerm = "") => {
@@ -108,28 +100,63 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem(searchEngineStorageKey, activeSearchEngine);
   };
 
+  const applyLayout = () => {
+    if (currentLayout === "grid") {
+      gridIcon.classList.add("hidden");
+      listIcon.classList.remove("hidden");
+    } else {
+      gridIcon.classList.remove("hidden");
+      listIcon.classList.add("hidden");
+    }
+    render(webSearchBar.value);
+  };
+
+  const toggleLayout = () => {
+    currentLayout = currentLayout === "grid" ? "list" : "grid";
+    localStorage.setItem(layoutStorageKey, currentLayout);
+    applyLayout();
+  };
+
   // --- FUNÇÕES DE CRIAÇÃO DE ELEMENTOS ---
 
   const createBookmarkElement = (bookmark) => {
     const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
-    const fallbackIcon = `https://placehold.co/32x32/eeeeee/999999?text=fav`;
+    const fallbackIcon = "https://placehold.co/40x40/eeeeee/999999?text=?";
     const element = document.createElement("div");
-    element.className = "relative flex flex-col items-center group/item";
+
     element.setAttribute("draggable", "true");
     element.dataset.id = bookmark.id;
 
-    element.innerHTML = `
-                <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg transition-colors duration-200 w-full">
-                    <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}';" />
-                    <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
-                </a>
-                <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                </button>
-                <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            `;
+    if (currentLayout === "list") {
+      element.className =
+        "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200";
+      element.innerHTML = `
+                  <img src="${faviconUrl}" alt="" class="w-6 h-6 object-contain mr-3 rounded" onerror="this.onerror=null; this.src='${fallbackIcon}';" />
+                  <a href="${bookmark.url}" rel="noopener noreferrer" class="flex-grow text-sm text-gray-700">${bookmark.name}</a>
+                  <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
+                      <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                      </button>
+                      <button class="remove-bookmark-btn p-1 text-gray-500 hover:text-red-600">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
+                  </div>
+              `;
+    } else {
+      element.className = "relative flex flex-col items-center group/item";
+      element.innerHTML = `
+                  <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
+                      <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}';" />
+                      <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
+                  </a>
+                  <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                  </button>
+                  <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+              `;
+    }
 
     element.addEventListener("dragstart", (e) => {
       e.stopPropagation();
@@ -189,7 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const createContainerElement = (container, containerBookmarks) => {
     const element = document.createElement("div");
     element.className =
-      "bg-gray-50 p-4 rounded-lg shadow-md relative group/category transition-all hover:cursor-grab";
+      "bg-gray-50 p-4 rounded-lg shadow-md relative group/category transition-all";
+
     element.setAttribute("draggable", "true");
     element.dataset.id = container.id;
 
@@ -237,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     header.className = "flex justify-between items-center mb-4";
     const titleElement = document.createElement("h2");
     titleElement.className =
-      "text-xl font-bold text-gray-800 cursor-text flex-grow";
+      "text-xl font-bold text-gray-800 cursor-pointer flex-grow";
     titleElement.textContent = container.title;
 
     titleElement.addEventListener("click", () => {
@@ -283,45 +311,64 @@ document.addEventListener("DOMContentLoaded", () => {
     element.appendChild(removeContainerBtn);
 
     const grid = document.createElement("div");
-    grid.className = "flex flex-wrap gap-x-4 gap-y-6";
+    grid.className =
+      currentLayout === "grid"
+        ? "flex flex-wrap gap-x-4 gap-y-6"
+        : "flex flex-col gap-1";
     containerBookmarks.forEach((bookmark) =>
       grid.appendChild(createBookmarkElement(bookmark))
     );
-
-    const addBookmarkBox = document.createElement("div");
-    if (containerBookmarks.length === 0) {
-      addBookmarkBox.className =
-        "flex flex-col items-center justify-center p-2 cursor-pointer";
-    } else {
-      addBookmarkBox.className =
-        "flex flex-col items-center justify-center p-2 cursor-pointer opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
-    }
-    addBookmarkBox.innerHTML = `
-                <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </div>
-                <span class="mt-2 text-sm font-medium text-gray-500">Adicionar</span>
-            `;
-    addBookmarkBox.addEventListener("click", () => {
-      dialogTitle.textContent = "Adicionar Novo Favorito";
-      dialogForm.reset();
-      activeContainerId = container.id;
-      dialog.classList.remove("hidden");
-    });
-    grid.appendChild(addBookmarkBox);
+    grid.appendChild(
+      createAddBookmarkBox(container.id, containerBookmarks.length > 0)
+    );
 
     element.appendChild(header);
     element.appendChild(grid);
     return element;
   };
 
+  const createAddBookmarkBox = (containerId, hasBookmarks) => {
+    const addBookmarkBox = document.createElement("div");
+
+    if (currentLayout === "list") {
+      addBookmarkBox.className =
+        "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500";
+      addBookmarkBox.innerHTML = `
+                    <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span class="text-sm">Adicionar Favorito</span>
+                `;
+    } else {
+      if (hasBookmarks) {
+        addBookmarkBox.className =
+          "flex flex-col items-center justify-center p-2 cursor-pointer opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
+      } else {
+        addBookmarkBox.className =
+          "flex flex-col items-center justify-center p-2 cursor-pointer";
+      }
+      addBookmarkBox.innerHTML = `
+                    <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <span class="mt-2 text-sm font-medium text-gray-600">Adicionar</span>
+                `;
+    }
+
+    addBookmarkBox.addEventListener("click", () => {
+      dialogTitle.textContent = "Adicionar Novo Favorito";
+      dialogForm.reset();
+      activeContainerId = containerId;
+      dialog.classList.remove("hidden");
+    });
+    return addBookmarkBox;
+  };
+
   const createAddCategoryBox = () => {
     const addContainerBox = document.createElement("div");
     addContainerBox.className =
       "bg-gray-50/50 border-2 border-dashed border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer min-h-[148px]";
+
     const addTitle = document.createElement("h2");
-    addTitle.className =
-      "text-xl font-bold text-gray-400 hover:text-gray-600 transition-colors text-center";
+    addTitle.className = "text-xl font-bold text-gray-300 text-center";
     addTitle.textContent = "+ Criar Categoria";
     addTitle.addEventListener("click", () => {
       const input = document.createElement("input");
@@ -358,17 +405,16 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const query = webSearchBar.value.trim();
     if (query) {
-      // ALTERAÇÃO: Trocado window.open por window.location.href
       window.location.href =
         searchEngines[activeSearchEngine].url + encodeURIComponent(query);
     }
   });
 
   webSearchSubmitBtn.addEventListener("mousedown", (e) => {
-    const query = webSearchBar.value.trim();
     if (e.button === 1) {
       // Botão do meio
       e.preventDefault();
+      const query = webSearchBar.value.trim();
       if (query) {
         window.open(
           searchEngines[activeSearchEngine].url + encodeURIComponent(query),
@@ -376,16 +422,8 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
     }
-    if (e.button === 0) {
-      // Botão esquerdo
-      e.preventDefault();
-      if (query) {
-        // ALTERAÇÃO: Trocado window.open por window.location.href
-        window.location.href =
-          searchEngines[activeSearchEngine].url + encodeURIComponent(query);
-      }
-    }
   });
+
   engineSelectorBtn.addEventListener("click", () =>
     engineOptions.classList.toggle("hidden")
   );
@@ -500,9 +538,11 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = "";
   });
 
+  layoutToggleBtn.addEventListener("click", toggleLayout);
+
   // --- INICIALIZAÇÃO ---
   loadData();
   updateSearchEngineUI();
-  render();
+  applyLayout();
   webSearchBar.focus();
 });
