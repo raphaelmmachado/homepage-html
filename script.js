@@ -410,21 +410,42 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const query = webSearchBar.value.trim();
     if (query) {
-      window.location.href =
-        searchEngines[activeSearchEngine].url + encodeURIComponent(query);
+      const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
+      if (urlPattern.test(query)) {
+        let url = query;
+        if (!/^https?:\/\//i.test(url)) {
+          url = "https://" + url;
+        }
+        window.location.href = url;
+      } else {
+        window.location.href =
+          searchEngines[activeSearchEngine].url + encodeURIComponent(query);
+      }
     }
   });
 
   webSearchSubmitBtn.addEventListener("mousedown", (e) => {
+    // Botão do meio
     if (e.button === 1) {
-      // Botão do meio
       e.preventDefault();
       const query = webSearchBar.value.trim();
       if (query) {
-        window.open(
-          searchEngines[activeSearchEngine].url + encodeURIComponent(query),
-          "_blank"
-        );
+        const urlPattern =
+          /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
+        //se for url
+        if (urlPattern.test(query)) {
+          let url = query;
+          // se a url nao tiver http ou https, adiciona https
+          if (!/^https?:\/\//i.test(url)) {
+            url = "https://" + url;
+          }
+          window.open(url, "_blank");
+        } else {
+          window.open(
+            searchEngines[activeSearchEngine].url + encodeURIComponent(query),
+            "_blank"
+          );
+        }
       }
     }
   });
