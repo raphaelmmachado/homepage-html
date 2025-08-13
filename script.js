@@ -121,7 +121,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createBookmarkElement = (bookmark) => {
     const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
-    const fallbackIcon = "https://placehold.co/40x40/eeeeee/999999?text=?";
+    const fallbackIconM = "https://placehold.co/32x32/eeeeee/999999?text=?";
+    const fallbackIconS = "https://placehold.co/24x24/eeeeee/999999?text=?";
     const element = document.createElement("div");
 
     element.setAttribute("draggable", "true");
@@ -131,8 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
       element.className =
         "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200";
       element.innerHTML = `
-                  <img src="${faviconUrl}" alt="" class="w-6 h-6 object-contain mr-3 rounded" onerror="this.onerror=null; this.src='${fallbackIcon}';" />
-                  <a href="${bookmark.url}" rel="noopener noreferrer" class="flex-grow text-sm text-gray-700">${bookmark.name}</a>
+                  
+                  <a href="${bookmark.url}" rel="noopener noreferrer" class="flex items-center">
+                    <img src="${faviconUrl}" alt="" class="w-6 h-6 object-contain mr-3 rounded" onerror="this.src='${fallbackIconS}';" />
+                    <span class="flex-grow text-sm text-gray-700">${bookmark.name}</span>
+                  </a>
                   <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
                       <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
@@ -146,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
       element.className = "relative flex flex-col items-center group/item";
       element.innerHTML = `
                   <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
-                      <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.onerror=null; this.src='${fallbackIcon}';" />
+                      <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
                       <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
                   </a>
                   <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
