@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const containersStorageKey = "my-homepage-containers-v2";
   const searchEngineStorageKey = "my-homepage-search-engine";
   const layoutStorageKey = "my-homepage-layout";
-
   // --- ELEMENTOS DO DOM ---
   const containersWrapper = document.getElementById("containers-wrapper");
   const dialog = document.getElementById("bookmark-dialog");
@@ -314,6 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
     header.appendChild(titleElement);
     element.appendChild(removeContainerBtn);
 
+    let addBookmarkBox = null;
     const grid = document.createElement("div");
     grid.className =
       currentLayout === "grid"
@@ -322,9 +322,28 @@ document.addEventListener("DOMContentLoaded", () => {
     containerBookmarks.forEach((bookmark) =>
       grid.appendChild(createBookmarkElement(bookmark))
     );
-    grid.appendChild(
-      createAddBookmarkBox(container.id, containerBookmarks.length > 0)
-    );
+
+    element.addEventListener("mouseover", () => {
+      if (!addBookmarkBox)
+        addBookmarkBox = createAddBookmarkBox(
+          container.id,
+          containerBookmarks.length > 0
+        );
+      grid.appendChild(addBookmarkBox);
+    });
+
+    element.addEventListener("mouseout", () => {
+      setTimeout(() => {
+        if (
+          addBookmarkBox &&
+          !addBookmarkBox.matches(":hover") &&
+          !element.matches(":hover")
+        ) {
+          grid.removeChild(addBookmarkBox);
+          addBookmarkBox = null;
+        }
+      }, 2000);
+    });
 
     element.appendChild(header);
     element.appendChild(grid);
