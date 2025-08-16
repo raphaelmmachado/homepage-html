@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (containersWrapper.innerHTML === "" && lowerCaseSearchTerm) {
-      containersWrapper.innerHTML = `<p class="text-center text-gray-500 w-full">Nenhum favorito encontrado para "${searchTerm}".</p>`;
+      containersWrapper.innerHTML = `<p class="text-center text-gray-300 w-full">Nenhum favorito encontrado para "${searchTerm}".</p>`;
     }
 
     if (!lowerCaseSearchTerm) {
@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
           grid.removeChild(addBookmarkBox);
           addBookmarkBox = null;
         }
-      }, 1000);
+      }, 600);
     });
 
     element.appendChild(header);
@@ -359,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
           "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500 opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
       } else {
         addBookmarkBox.className =
-          "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500";
+          "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-600";
       }
       addBookmarkBox.innerHTML = `
                     <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -368,16 +368,16 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       if (hasBookmarks) {
         addBookmarkBox.className =
-          "flex flex-col items-center justify-center p-2 cursor-pointer opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
+          "flex flex-col items-center justify-center p-2 cursor-pointer text-gray-500 opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
       } else {
         addBookmarkBox.className =
-          "flex flex-col items-center justify-center p-2 cursor-pointer";
+          "flex flex-col items-center justify-center p-2 cursor-pointer text-gray-600 font-medium";
       }
       addBookmarkBox.innerHTML = `
                     <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </div>
-                    <span class="mt-2 text-sm font-medium text-gray-600">Adicionar</span>
+                    <span class="mt-2 text-sm">Adicionar</span>
                 `;
     }
 
@@ -393,11 +393,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const createAddCategoryBox = () => {
     const addContainerBox = document.createElement("div");
     addContainerBox.className =
-      "cursor-pointer bg-gray-50/50 border-2 border-dashed border-gray-200 p-4 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center min-h-[148px]";
+      "cursor-pointer bg-gray-50/50 border-2 border-dashed border-gray-200 px-8 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center min-h-[148px]";
 
     const addTitle = document.createElement("h2");
     addTitle.className = "text-xl font-bold text-gray-400 text-center";
-    addTitle.textContent = "+ Criar Categoria";
+    addTitle.textContent = "+ Adicionar";
     addContainerBox.addEventListener("click", () => {
       const input = document.createElement("input");
       input.type = "text";
