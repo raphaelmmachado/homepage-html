@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
           grid.removeChild(addBookmarkBox);
           addBookmarkBox = null;
         }
-      }, 2000);
+      }, 1000);
     });
 
     element.appendChild(header);
