@@ -313,7 +313,6 @@ document.addEventListener("DOMContentLoaded", () => {
     header.appendChild(titleElement);
     element.appendChild(removeContainerBtn);
 
-    let addBookmarkBox = null;
     const grid = document.createElement("div");
     grid.className =
       currentLayout === "grid"
@@ -323,27 +322,12 @@ document.addEventListener("DOMContentLoaded", () => {
       grid.appendChild(createBookmarkElement(bookmark))
     );
 
-    element.addEventListener("mouseover", () => {
-      if (!addBookmarkBox)
-        addBookmarkBox = createAddBookmarkBox(
-          container.id,
-          containerBookmarks.length > 0
-        );
-      grid.appendChild(addBookmarkBox);
-    });
+    const addBookmarkBox = createAddBookmarkBox(
+      container.id,
+      containerBookmarks.length > 0
+    );
 
-    element.addEventListener("mouseout", () => {
-      setTimeout(() => {
-        if (
-          addBookmarkBox &&
-          !addBookmarkBox.matches(":hover") &&
-          !element.matches(":hover")
-        ) {
-          grid.removeChild(addBookmarkBox);
-          addBookmarkBox = null;
-        }
-      }, 600);
-    });
+    grid.appendChild(addBookmarkBox);
 
     element.appendChild(header);
     element.appendChild(grid);
