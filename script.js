@@ -49,10 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
       url: "https://search.brave.com/search?q=",
       icon: `<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 436.49 511.97" width="24" height="24"><defs><style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:#fff;}</style><linearGradient id="linear-gradient" x1="-18.79" y1="359.73" x2="194.32" y2="359.73" gradientTransform="matrix(2.05, 0, 0, -2.05, 38.49, 992.77)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f1562b"/><stop offset="0.3" stop-color="#f1542b"/><stop offset="0.41" stop-color="#f04d2a"/><stop offset="0.49" stop-color="#ef4229"/><stop offset="0.5" stop-color="#ef4029"/><stop offset="0.56" stop-color="#e83e28"/><stop offset="0.67" stop-color="#e13c26"/><stop offset="1" stop-color="#df3c26"/></linearGradient></defs><title>Brave</title><path class="cls-1" d="M436.49,165.63,420.7,122.75l11-24.6A8.47,8.47,0,0,0,430,88.78L400.11,58.6a48.16,48.16,0,0,0-50.23-11.66l-8.19,2.89L296.09,.43,218.25,0,140.4,.61,94.85,50.41l-8.11-2.87A48.33,48.33,0,0,0,36.19,59.3L5.62,90.05a6.73,6.73,0,0,0-1.36,7.47l11.47,25.56L0,165.92,56.47,380.64a89.7,89.7,0,0,0,34.7,50.23l111.68,75.69a24.73,24.73,0,0,0,30.89,0l111.62-75.8A88.86,88.86,0,0,0,380,380.53l46.07-176.14Z"/><path class="cls-2" d="M231,317.33a65.61,65.61,0,0,0-9.11-3.3h-5.49a66.08,66.08,0,0,0-9.11,3.3l-13.81,5.74-15.6,7.18-25.4,13.24a4.84,4.84,0,0,0-.62,9l22.06,15.49q7,5,13.55,10.76l6.21,5.35,13,11.37,5.89,5.2a10.15,10.15,0,0,0,12.95,0l25.39-22.18,13.6-10.77,22.06-15.79a4.8,4.8,0,0,0-.68-8.93l-25.36-12.8L244.84,323ZM387.4,175.2l.8-2.3a61.26,61.26,0,0,0-.57-9.18,73.51,73.51,0,0,0-8.19-15.44l-14.35-21.06-10.22-13.88-19.23-24a69.65,69.65,0,0,0-5.7-6.67h-.4L321,84.25l-42.27,8.14a33.49,33.49,0,0,1-12.59-1.84l-23.21-7.5-16.61-4.59a70.52,70.52,0,0,0-14.67,0L195,83.1l-23.21,7.54a33.89,33.89,0,0,1-12.59,1.84l-42.22-8-8.54-1.58h-.4a65.79,65.79,0,0,0-5.7,6.67l-19.2,24Q77.81,120.32,73,127.45L58.61,148.51l-6.78,11.31a51,51,0,0,0-1.94,13.35l.8,2.3A34.51,34.51,0,0,0,52,179.81l11.33,13,50.23,53.39a14.31,14.31,0,0,1,2.55,14.34L107.68,280a25.23,25.23,0,0,0-.39,16l1.64,4.52a43.58,43.58,0,0,0,13.39,18.76l7.89,6.43a15,15,0,0,0,14.35,1.72L172.62,314A70.38,70.38,0,0,0,187,304.52l22.46-20.27a9,9,0,0,0,3-6.36,9.08,9.08,0,0,0-2.5-6.56L159.2,237.18a9.83,9.83,0,0,1-3.09-12.45l19.66-36.95a19.21,19.21,0,0,0,1-14.67A22.37,22.37,0,0,0,165.58,163L103.94,139.8c-4.44-1.6-4.2-3.6.51-3.88l36.2-3.59a55.9,55.9,0,0,1,16.9,1.5l31.5,8.8a9.64,9.64,0,0,1,6.74,10.76L183.42,221a34.72,34.72,0,0,0-.61,11.41c.5,1.61,4.73,3.6,9.36,4.73l19.19,4a46.38,46.38,0,0,0,16.86,0l17.26-4c4.64-1,8.82-3.23,9.35-4.85a34.94,34.94,0,0,0-.63-11.4l-12.45-67.59a9.66,9.66,0,0,1,6.74-10.76l31.5-8.83a55.87,55.87,0,0,1,16.9-1.5l36.2,3.37c4.74.44,5,2.2.54,3.88L272,162.79a22.08,22.08,0,0,0-11.16,10.12,19.3,19.3,0,0,0,1,14.67l19.69,36.95A9.84,9.84,0,0,1,278.45,237l-50.66,34.23a9,9,0,0,0,.32,12.78l.15.14,22.49,20.27a71.46,71.46,0,0,0,14.35,9.47l28.06,13.35a14.89,14.89,0,0,0,14.34-1.76l7.9-6.45a43.53,43.53,0,0,0,13.38-18.8l1.65-4.52a25.27,25.27,0,0,0-.39-16l-8.26-19.49a14.4,14.4,0,0,1,2.55-14.35l50.23-53.45,11.3-13a35.8,35.8,0,0,0,1.54-4.24Z"/></svg>`,
     },
+
     duck_duck: {
       name: "DuckDuckGo",
       url: "https://duckduckgo.com/?q=",
       icon: `<svg xmlns="http://www.w3.org/2000/svg" aria-label="DuckDuckGo" role="img"  width="24" height="24"  viewBox="-128 -128 256 256" fill="#ffffff" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><rect width="256" height="256" rx="15%" x="-128" y="-128"></rect><circle r="108" fill="#d53"></circle><circle r="96" fill="none" stroke="#ffffff" stroke-width="7"></circle><path d="M-32-55C-62-48-51-6-51-6l19 93 7 3M-39-73h-8l11 4s-11 0-11 7c24-1 35 5 35 5" fill="#ddd"></path><path d="M25 95S1 57 1 32c0-47 31-7 31-44S1-58 1-58c-15-19-44-15-44-15l7 4s-7 2-9 4 19-3 28 5c-37 3-31 33-31 33l21 120"></path><path d="M25-1l38-10c34 5-29 24-33 23C0 7 9 32 45 24s9 20-24 9C-26 20-1-3 25-1" fill="#fc0"></path><path d="M15 78l2-3c22 8 23 11 22-9s0-20-23-3c0-5-13-3-15 0-21-9-23-12-22 2 2 29 1 24 21 14" fill="#6b5"></path><path d="M-1 67v12c1 2 17 2 17-2s-8 3-13 1-2-13-2-13" fill="#4a4"></path><path d="M-23-32c-5-6-18-1-15 7 1-4 8-10 15-7m32 0c1-6 11-7 14-1-4-2-10-2-14 1m-33 16a2 2 0 1 1 0 1m-8 3a7 7 0 1 0 0-1m52-6a2 2 0 1 1 0 1m-6 3a6 6 0 1 0 0-1" fill="#148"></path></g><title>Duck Duck Go</title> </svg>`,
+    },
+    tradutor: {
+      name: "Tradutor",
+      url: "https://translate.google.com.br/?sl=auto&tl=pt&text=",
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 333334 333400" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"><defs><radialGradient id="c" gradientUnits="userSpaceOnUse" cx="23333.1" cy="6668.12" r="166700" fx="23333.1" fy="6668.12"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff"/><stop offset="1" stop-color="#fff"/></radialGradient><mask id="b"><radialGradient id="a" gradientUnits="userSpaceOnUse" cx="-652315" cy="-721597" r="2971250" fx="-652315" fy="-721597"><stop offset="0" stop-opacity=".102" stop-color="#fff"/><stop offset="1" stop-opacity="0" stop-color="#fff"/><stop offset="1" stop-color="#fff"/></radialGradient><path fill="url(#a)" d="M-150-150h333634v333700H-150z"/></mask></defs><path d="M311158 333400c12190 0 22176-9819 22176-21841V88769c0-12023-9986-21842-22176-21842H94713l86865 266473h129580z" fill="#dbdbdb"/><path d="M311158 76947c3239 0 6312 1269 8617 3540 2271 2238 3540 5177 3540 8283v222790c0 3106-1235 6045-3540 8282-2304 2271-5377 3540-8617 3540H188859L108506 76947h202652m0-10019H94713l86865 266473h129580c12190 0 22176-9819 22176-21841V88770c0-12023-9986-21842-22176-21842z" fill="#dcdcdc"/><path fill="#4352b8" d="M161073 270448l20506 62952 57008-62952z"/><path d="M312628 159002v-13058h-62953v-21107h-20439v21107h-40176v13058h79952c-4275 15062-13726 29289-22943 40343-16331-19337-16398-25615-16398-25615h-16966s702 9418 23612 36269c-7448 7614-13092 12123-13092 12123l5210 16298s7882-6780 17734-17233c9885 10720 22643 23611 39141 38974l10720-10720c-17667-16030-30625-28754-40143-38974 12757-15095 25715-34098 28454-51498h28254v33h33z" fill="#607988"/><path d="M22176 0C9986 0 0 9986 0 22209v226096c0 12190 9985 22176 22176 22176h216445L151756 0H22176z" fill="#4285f4"/><path d="M124036 143807c-835 10119-9485 25114-30425 25114-18134 0-32829-14995-32829-33463 0-18469 14695-33464 32829-33464 10320 0 17200 4475 21140 8115l13759-13225c-9050-8349-20839-13559-34900-13559-28754 0-52099 23344-52099 52099 0 28754 23345 52099 52099 52099 30124 0 50028-21140 50028-50963 0-4275-534-7414-1235-10620H93643v17834l30391 33z" fill="#eee"/><path d="M311159 66927H173263L151756 0H22176C9986 0 1 9986 1 22209v226096c0 12190 9985 22176 22175 22176h138897l20506 62919h129580c12190 0 22175-9818 22175-21841V88769c0-12022-9985-21842-22175-21842z" mask="url(#b)" fill="url(#c)"/><title>Google Translate</title></svg>`,
     },
     youtube: {
       name: "YouTube",
@@ -446,6 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const query = webSearchBar.value.trim();
     if (query) {
+      // se for url manda direto para o site
       const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
       if (urlPattern.test(query)) {
         let url = query;
@@ -453,9 +460,17 @@ document.addEventListener("DOMContentLoaded", () => {
           url = "https://" + url;
         }
         window.location.href = url;
-      } else {
-        window.location.href =
-          searchEngines[activeSearchEngine].url + encodeURIComponent(query);
+      }
+      // se for pesquisa, manda para o mecanismo de busca ativo
+      else {
+        // Se for o tradutor, adiciona o parâmetro de tradução - é o único que precisa.
+        if (searchEngines[activeSearchEngine].name === "Tradutor") {
+          window.location.href = `https://translate.google.com.br/?sl=auto&tl=pt&text=
+          ${encodeURIComponent(query)}&op=translate`;
+        } else {
+          window.location.href =
+            searchEngines[activeSearchEngine].url + encodeURIComponent(query);
+        }
       }
     }
   });
