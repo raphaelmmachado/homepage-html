@@ -7,13 +7,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let draggedBookmarkId = null;
   let activeSearchEngine = "brave";
   let currentLayout = "grid";
+  let currentTheme = "light";
 
   const bookmarksStorageKey = "my-homepage-bookmarks-v2";
   const containersStorageKey = "my-homepage-containers-v2";
   const searchEngineStorageKey = "my-homepage-search-engine";
   const layoutStorageKey = "my-homepage-layout";
-  // --- ELEMENTOS DO DOM ---
+  const themeStorageKey = "my-homepage-theme";
 
+  // --- ELEMENTOS DO DOM ---
   const containersWrapper = document.getElementById("containers-wrapper");
   const dialog = document.getElementById("bookmark-dialog");
   const dialogTitle = document.getElementById("dialog-title");
@@ -27,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelBtn = document.getElementById("cancel-bookmark-btn");
   const webSearchBar = document.getElementById("web-search-bar");
   const webSearchForm = document.getElementById("web-search-form");
-  const webSearchSubmitBtn = document.getElementById("web-search-submit-btn");
   const engineSelectorBtn = document.getElementById("engine-selector-btn");
   const engineOptions = document.getElementById("engine-options");
   const importBtn = document.getElementById("import-btn");
@@ -40,6 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const alertDialogTitle = document.getElementById("alert-dialog-title");
   const alertDialogMessage = document.getElementById("alert-dialog-message");
   const alertDialogButtons = document.getElementById("alert-dialog-buttons");
+  const themeToggleBtn = document.getElementById("theme-toggle-btn");
+  const sunIcon = document.getElementById("theme-icon-sun");
+  const moonIcon = document.getElementById("theme-icon-moon");
+  const searchResultsWrapper = document.getElementById(
+    "search-results-wrapper"
+  );
+  const appDiv = document.getElementById("app");
 
   // --- DEFINIÇÕES DE MECANISMOS DE BUSCA ---
   const searchEngines = {
@@ -68,11 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
       url: "https://www.youtube.com/results?search_query=",
       icon: `<svg height="24" width="24" version="1.1" id="Layer_1"xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 461.001 461.001" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path style="fill:#F61C0D;" d="M365.257,67.393H95.744C42.866,67.393,0,110.259,0,163.137v134.728 c0,52.878,42.866,95.744,95.744,95.744h269.513c52.878,0,95.744-42.866,95.744-95.744V163.137 C461.001,110.259,418.135,67.393,365.257,67.393z M300.506,237.056l-126.06,60.123c-3.359,1.602-7.239-0.847-7.239-4.568V168.607 c0-3.774,3.982-6.22,7.348-4.514l126.06,63.881C304.363,229.873,304.298,235.248,300.506,237.056z"></path> </g> </g> <title>Youtube</title> </svg>`,
     },
-    // x: {
-    //   name: "X.com",
-    //   url: "https://x.com/search?q=",
-    //   icon: `<svg xmlns="http://www.w3.org/2000/svg"  height="24" width="24"shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 462.799"><path fill-rule="nonzero" d="M403.229 0h78.506L310.219 196.04 512 462.799H354.002L230.261 301.007 88.669 462.799h-78.56l183.455-209.683L0 0h161.999l111.856 147.88L403.229 0zm-27.556 415.805h43.505L138.363 44.527h-46.68l283.99 371.278z"/> <title>X.com</title>  </svg>`,
-    // },
   };
 
   // --- FUNÇÕES DE LÓGICA ---
@@ -116,39 +119,69 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedBookmarks = localStorage.getItem(bookmarksStorageKey);
     const savedEngine = localStorage.getItem(searchEngineStorageKey);
     const savedLayout = localStorage.getItem(layoutStorageKey);
-
+    const savedTheme = localStorage.getItem(themeStorageKey);
     containers = savedContainers
       ? JSON.parse(savedContainers)
       : [{ id: crypto.randomUUID(), title: "Categoria" }];
     bookmarks = savedBookmarks ? JSON.parse(savedBookmarks) : [];
     activeSearchEngine = savedEngine || "brave";
     currentLayout = savedLayout || "grid";
+    currentTheme = savedTheme || "light";
   };
 
   const render = (searchTerm = "") => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    containersWrapper.innerHTML = "";
-
-    containers.forEach((container) => {
-      const containerBookmarks = bookmarks.filter(
+    if (lowerCaseSearchTerm) {
+      appDiv.classList.add("hidden");
+      searchResultsWrapper.classList.remove("hidden");
+      searchResultsWrapper.innerHTML = "";
+      const filteredBookmarks = bookmarks.filter(
         (b) =>
-          b.containerId === container.id &&
-          b.name.toLowerCase().includes(lowerCaseSearchTerm)
+          b.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+          (b.description &&
+            b.description.toLowerCase().includes(lowerCaseSearchTerm))
       );
-
-      if (!lowerCaseSearchTerm || containerBookmarks.length > 0) {
+      if (filteredBookmarks.length > 0) {
+        const resultsContainer = document.createElement("div");
+        resultsContainer.className =
+          "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative transition-all w-full";
+        const header = document.createElement("div");
+        header.className = "flex justify-between items-center mb-4";
+        const titleElement = document.createElement("h2");
+        titleElement.className =
+          "text-xl font-bold text-gray-800 dark:text-gray-200";
+        titleElement.textContent = `Resultados da Pesquisa`;
+        header.appendChild(titleElement);
+        resultsContainer.appendChild(header);
+        const resultsList = document.createElement("div");
+        resultsList.className = "flex flex-col gap-1";
+        const originalLayout = currentLayout;
+        currentLayout = "list";
+        filteredBookmarks.forEach((bookmark) => {
+          resultsList.appendChild(createBookmarkElement(bookmark));
+        });
+        currentLayout = originalLayout;
+        resultsContainer.appendChild(resultsList);
+        searchResultsWrapper.appendChild(resultsContainer);
+      } else {
+        searchResultsWrapper.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Nenhum favorito encontrado para "${searchTerm}"</p>`;
+      }
+    } else {
+      appDiv.classList.remove("hidden");
+      searchResultsWrapper.classList.add("hidden");
+      searchResultsWrapper.innerHTML = "";
+      containersWrapper.innerHTML = "";
+      containers.forEach((container) => {
+        const containerBookmarks = bookmarks.filter(
+          (b) => b.containerId === container.id
+        );
         containersWrapper.appendChild(
           createContainerElement(container, containerBookmarks)
         );
+      });
+      if (containersWrapper.innerHTML !== "" || containers.length === 0) {
+        containersWrapper.appendChild(createAddCategoryBox());
       }
-    });
-
-    if (containersWrapper.innerHTML === "" && lowerCaseSearchTerm) {
-      containersWrapper.innerHTML = `<p class="text-center text-gray-300 w-full">Nenhum favorito encontrado para "${searchTerm}".</p>`;
-    }
-
-    if (!lowerCaseSearchTerm) {
-      containersWrapper.appendChild(createAddCategoryBox());
     }
   };
 
@@ -175,59 +208,82 @@ document.addEventListener("DOMContentLoaded", () => {
     applyLayout();
   };
 
-  // --- FUNÇÕES DE CRIAÇÃO DE ELEMENTOS ---
+  const applyTheme = () => {
+    if (currentTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      sunIcon.classList.remove("hidden");
+      moonIcon.classList.add("hidden");
+    } else {
+      document.documentElement.classList.remove("dark");
+      sunIcon.classList.add("hidden");
+      moonIcon.classList.remove("hidden");
+    }
+  };
 
+  const toggleTheme = () => {
+    currentTheme = currentTheme === "light" ? "dark" : "light";
+    localStorage.setItem(themeStorageKey, currentTheme);
+    applyTheme();
+  };
+
+  // --- FUNÇÕES DE CRIAÇÃO DE ELEMENTOS ---
   const createBookmarkElement = (bookmark) => {
     const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
     const fallbackIconM = "https://placehold.co/32x32/eeeeee/999999?text=?";
     const fallbackIconS = "https://placehold.co/24x24/eeeeee/999999?text=?";
     const element = document.createElement("div");
-
     element.setAttribute("draggable", "true");
     element.dataset.id = bookmark.id;
-
     if (currentLayout === "list") {
+      containersWrapper.classList.add("justify-center");
+      containersWrapper.classList.remove("justify-start");
       element.className =
-        "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200";
+        "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50";
       element.innerHTML = `
-                  
-                  <a href="${
-                    bookmark.url
-                  }" rel="noopener noreferrer" class="flex items-center" title="${
+                      <a href="${
+                        bookmark.url
+                      }" rel="noopener noreferrer" target="_blank" class="flex items-center flex-grow" title="${
         bookmark.description || ""
       }">
-                    <img src="${faviconUrl}" alt="${
+                          <img src="${faviconUrl}" alt="${
         bookmark.name
       }" class="w-6 h-6 object-contain mr-3 rounded" onerror="this.src='${fallbackIconS}';" />
-                    <span class="flex-grow text-sm text-gray-700">${
-                      bookmark.name
-                    }</span>
-                  </a>
-                  <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
-                      <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
+                          <span class="flex-grow text-sm text-gray-700 dark:text-gray-300">${
+                            bookmark.name
+                          }</span>
+                      </a>
+                      <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
+                          <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                          </button>
+                          <button class="remove-bookmark-btn p-1 text-gray-500 hover:text-red-600">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </button>
+                      </div>`;
+    } else {
+      containersWrapper.classList.remove("justify-center");
+      containersWrapper.classList.add("justify-start");
+      element.className = "relative flex flex-col items-center group/item w-20";
+      element.innerHTML = `
+                      <a href="${
+                        bookmark.url
+                      }" rel="noopener noreferrer" target="_blank" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200 w-full" title="${
+        bookmark.description || ""
+      }">
+                          <img src="${faviconUrl}" alt="Ícone de ${
+        bookmark.name
+      }" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
+                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300 break-words text-center w-full px-1">${
+                            bookmark.name
+                          }</span>
+                      </a>
+                      <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                       </button>
-                      <button class="remove-bookmark-btn p-1 text-gray-500 hover:text-red-600">
+                      <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>
-                  </div>
-              `;
-    } else {
-      element.className = "relative flex flex-col items-center group/item";
-      element.innerHTML = `
-                  <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
-                      <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
-                      <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
-                  </a>
-                  <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                  </button>
-                  <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
-              `;
+                      </button>`;
     }
-
     element.addEventListener("dragstart", (e) => {
       e.stopPropagation();
       draggedBookmarkId = bookmark.id;
@@ -249,20 +305,16 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
       element.classList.remove("drag-over-bookmark");
       if (!draggedBookmarkId || draggedBookmarkId === bookmark.id) return;
-
       const draggedIndex = bookmarks.findIndex(
         (b) => b.id === draggedBookmarkId
       );
       const targetIndex = bookmarks.findIndex((b) => b.id === bookmark.id);
-
       const [draggedItem] = bookmarks.splice(draggedIndex, 1);
       bookmarks.splice(targetIndex, 0, draggedItem);
       draggedItem.containerId = bookmark.containerId;
-
       saveData();
       render(webSearchBar.value);
     });
-
     element
       .querySelector(".edit-bookmark-btn")
       .addEventListener("click", () => {
@@ -273,7 +325,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bookmarkUrlInput.value = bookmark.url;
         dialog.classList.remove("hidden");
       });
-
     element
       .querySelector(".remove-bookmark-btn")
       .addEventListener("click", () => {
@@ -287,11 +338,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const createContainerElement = (container, containerBookmarks) => {
     const element = document.createElement("div");
     element.className =
-      "bg-gray-50 p-4 rounded-lg shadow-md relative group/category transition-all";
-
+      "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative group/category transition-all w-full md:w-auto md:min-w-[250px]";
     element.setAttribute("draggable", "true");
     element.dataset.id = container.id;
-
     element.addEventListener("dragstart", (e) => {
       draggedContainerId = container.id;
       setTimeout(() => e.target.classList.add("dragging"), 0);
@@ -310,7 +359,6 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const targetContainer = e.target.closest(".group\\/category");
       targetContainer.classList.remove("drag-over");
-
       if (draggedBookmarkId) {
         const bookmark = bookmarks.find((b) => b.id === draggedBookmarkId);
         if (bookmark) {
@@ -331,19 +379,18 @@ document.addEventListener("DOMContentLoaded", () => {
       draggedBookmarkId = null;
       draggedContainerId = null;
     });
-
     const header = document.createElement("div");
     header.className = "flex justify-between items-center mb-4";
     const titleElement = document.createElement("h2");
     titleElement.className =
-      "text-xl font-bold text-gray-800 cursor-pointer flex-grow";
+      "text-xl font-bold text-gray-800 dark:text-gray-200 cursor-pointer flex-grow";
     titleElement.textContent = container.title;
-
     titleElement.addEventListener("click", () => {
       const input = document.createElement("input");
       input.type = "text";
       input.value = container.title;
-      input.className = "text-xl font-bold text-gray-800 title-input";
+      input.className =
+        "text-xl font-bold text-gray-800 dark:text-gray-200 title-input";
       const saveEdit = () => {
         const newTitle = input.value.trim();
         if (newTitle) container.title = newTitle;
@@ -359,10 +406,9 @@ document.addEventListener("DOMContentLoaded", () => {
       input.focus();
       input.select();
     });
-
     const removeContainerBtn = document.createElement("button");
     removeContainerBtn.className =
-      "absolute top-3 right-3 w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-lg opacity-0 group-hover/category:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white";
+      "absolute top-3 right-3 w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center text-lg opacity-0 group-hover/category:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white";
     removeContainerBtn.innerHTML = "&times;";
     removeContainerBtn.ariaLabel = `Remover categoria ${container.title}`;
     removeContainerBtn.addEventListener("click", async () => {
@@ -381,26 +427,21 @@ document.addEventListener("DOMContentLoaded", () => {
         render(webSearchBar.value);
       }
     });
-
     header.appendChild(titleElement);
     element.appendChild(removeContainerBtn);
-
     const grid = document.createElement("div");
     grid.className =
       currentLayout === "grid"
-        ? "flex flex-wrap gap-x-4 gap-y-6"
+        ? "flex flex-wrap gap-x-2 gap-y-4"
         : "flex flex-col gap-1";
     containerBookmarks.forEach((bookmark) =>
       grid.appendChild(createBookmarkElement(bookmark))
     );
-
     const addBookmarkBox = createAddBookmarkBox(
       container.id,
       containerBookmarks.length > 0
     );
-
     grid.appendChild(addBookmarkBox);
-
     element.appendChild(header);
     element.appendChild(grid);
     return element;
@@ -408,35 +449,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createAddBookmarkBox = (containerId, hasBookmarks) => {
     const addBookmarkBox = document.createElement("div");
-
+    addBookmarkBox.className = "add-bookmark-trigger";
     if (currentLayout === "list") {
-      if (hasBookmarks) {
-        addBookmarkBox.className =
-          "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-500 opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
-      } else {
-        addBookmarkBox.className =
-          "flex items-center p-2 rounded-lg hover:bg-gray-200 cursor-pointer text-gray-600";
-      }
+      addBookmarkBox.className +=
+        ` flex items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer text-gray-500 transition-opacity duration-300` +
+        (hasBookmarks ? " opacity-0 group-hover/category:opacity-100" : "");
       addBookmarkBox.innerHTML = `
-                    <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span class="text-sm">Adicionar</span>
-                `;
+                      <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                      <span class="text-sm">Adicionar</span>`;
     } else {
-      if (hasBookmarks) {
-        addBookmarkBox.className =
-          "flex flex-col items-center justify-center p-2 cursor-pointer text-gray-500 opacity-0 group-hover/category:opacity-100 transition-opacity duration-300";
-      } else {
-        addBookmarkBox.className =
-          "flex flex-col items-center justify-center p-2 cursor-pointer text-gray-600 font-medium";
-      }
+      addBookmarkBox.className +=
+        ` flex flex-col items-center justify-center p-2 cursor-pointer text-gray-500 w-20 transition-opacity duration-300` +
+        (hasBookmarks ? " opacity-0 group-hover/category:opacity-100" : "");
       addBookmarkBox.innerHTML = `
-                    <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 hover:text-gray-600 hover:border-gray-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    </div>
-                    <span class="mt-2 text-sm">Adicionar</span>
-                `;
+                      <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 transition-colors">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                      </div>
+                      <span class="mt-2 text-sm">Adicionar</span>`;
     }
-
     addBookmarkBox.addEventListener("click", () => {
       dialogTitle.textContent = "Adicionar novo site favorito";
       dialogForm.reset();
@@ -449,17 +479,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const createAddCategoryBox = () => {
     const addContainerBox = document.createElement("div");
     addContainerBox.className =
-      "cursor-pointer bg-gray-50/50 border-2 border-dashed border-gray-200 px-8 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center min-h-[148px]";
-
+      "cursor-pointer bg-white/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600 px-8 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex items-center justify-center min-h-[148px]";
     const addTitle = document.createElement("h2");
     addTitle.className = "text-xl font-bold text-gray-400 text-center";
-    addTitle.textContent = "+ Adicionar";
+    addTitle.textContent = "+ Adicionar Categoria";
     addContainerBox.addEventListener("click", () => {
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = "Nome da Nova Categoria";
       input.className =
-        "text-xl font-bold text-gray-800 title-input text-center";
+        "text-xl font-bold text-gray-800 dark:text-gray-200 title-input text-center";
       const saveNew = () => {
         const title = input.value.trim();
         if (title) {
@@ -482,52 +511,64 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- MANIPULADORES DE EVENTOS ---
-
   webSearchBar.addEventListener("input", (e) => render(e.target.value));
+
+  webSearchBar.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") {
+      const firstResultLink = searchResultsWrapper.querySelector("a[href]");
+      if (firstResultLink) {
+        e.preventDefault();
+        firstResultLink.focus();
+      }
+    }
+  });
+
+  searchResultsWrapper.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+      e.preventDefault();
+      const links = Array.from(
+        searchResultsWrapper.querySelectorAll("a[href]")
+      );
+      const focusedElement = document.activeElement;
+      const currentIndex = links.findIndex((link) => link === focusedElement);
+      if (currentIndex === -1) {
+        if (links.length > 0) links[0].focus();
+        return;
+      }
+      let nextIndex;
+      if (e.key === "ArrowUp") {
+        nextIndex = (currentIndex - 1 + links.length) % links.length;
+      } else {
+        nextIndex = (currentIndex + 1) % links.length;
+      }
+      if (links[nextIndex]) {
+        links[nextIndex].focus();
+      }
+    } else if (e.key === "Enter" && document.activeElement.tagName === "A") {
+      e.preventDefault();
+      document.activeElement.click();
+    }
+  });
 
   webSearchForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const query = webSearchBar.value.trim();
     if (query) {
-      // se for url manda direto para o site
       const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
       if (urlPattern.test(query)) {
         let url = query;
         if (!/^https?:\/\//i.test(url)) {
           url = "https://" + url;
         }
-        window.location.href = url;
-      }
-      // se for pesquisa, manda para o mecanismo de busca ativo
-      else {
-        // Se for o tradutor, adiciona o parâmetro de tradução - é o único que precisa.
+        window.open(url, "_blank");
+      } else {
         if (searchEngines[activeSearchEngine].name === "Tradutor") {
-          window.location.href = `https://translate.google.com.br/?sl=auto&tl=pt&text=
-          ${encodeURIComponent(query)}&op=translate`;
-        } else {
-          window.location.href =
-            searchEngines[activeSearchEngine].url + encodeURIComponent(query);
-        }
-      }
-    }
-  });
-
-  webSearchSubmitBtn.addEventListener("mousedown", (e) => {
-    // Botão do meio
-    if (e.button === 1) {
-      e.preventDefault();
-      const query = webSearchBar.value.trim();
-      if (query) {
-        const urlPattern =
-          /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
-        //se for url
-        if (urlPattern.test(query)) {
-          let url = query;
-          // se a url nao tiver http ou https, adiciona https
-          if (!/^https?:\/\//i.test(url)) {
-            url = "https://" + url;
-          }
-          window.open(url, "_blank");
+          window.open(
+            `https://translate.google.com.br/?sl=auto&tl=pt&text=${encodeURIComponent(
+              query
+            )}&op=translate`,
+            "_blank"
+          );
         } else {
           window.open(
             searchEngines[activeSearchEngine].url + encodeURIComponent(query),
@@ -555,8 +596,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const option = document.createElement("button");
     option.type = "button";
     option.className =
-      "flex items-center gap-2 w-full text-left p-2 hover:bg-gray-100";
-    option.innerHTML = `${searchEngines[key].icon} <span>${searchEngines[key].name}</span>`;
+      "flex items-center gap-2 w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700";
+    option.innerHTML = `${searchEngines[key].icon} <span class="dark:text-gray-200">${searchEngines[key].name}</span>`;
     option.addEventListener("click", () => {
       activeSearchEngine = key;
       updateSearchEngineUI();
@@ -571,13 +612,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const name = bookmarkNameInput.value.trim();
     const description = bookmarkDescriptionInput.value.trim();
     const url = bookmarkUrlInput.value.trim();
-
     if (name && url) {
       const cleanedUrl = url
         .replace(/^(?:https?:\/\/)?/i, "")
         .replace(/^www\./i, "");
       const finalUrl = "https://" + cleanedUrl;
-
       if (id) {
         const bookmark = bookmarks.find((b) => b.id === id);
         if (bookmark) {
@@ -594,7 +633,6 @@ document.addEventListener("DOMContentLoaded", () => {
           containerId: activeContainerId,
         });
       }
-
       saveData();
       render(webSearchBar.value);
       dialog.classList.add("hidden");
@@ -661,10 +699,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   layoutToggleBtn.addEventListener("click", toggleLayout);
+  themeToggleBtn.addEventListener("click", toggleTheme);
 
   // --- INICIALIZAÇÃO ---
   loadData();
   updateSearchEngineUI();
   applyLayout();
+  applyTheme();
   webSearchBar.focus();
 });
