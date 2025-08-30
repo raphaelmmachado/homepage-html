@@ -36,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const layoutToggleBtn = document.getElementById("layout-toggle-btn");
   const gridIcon = document.getElementById("layout-icon-grid");
   const listIcon = document.getElementById("layout-icon-list");
+  const alertDialog = document.getElementById("alert-dialog");
+  const alertDialogTitle = document.getElementById("alert-dialog-title");
+  const alertDialogMessage = document.getElementById("alert-dialog-message");
+  const alertDialogButtons = document.getElementById("alert-dialog-buttons");
 
   // --- DEFINIÇÕES DE MECANISMOS DE BUSCA ---
   const searchEngines = {
@@ -72,6 +76,36 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- FUNÇÕES DE LÓGICA ---
+  const showModal = (
+    message,
+    title = "Atenção",
+    buttons = [{ text: "OK", class: "primary" }]
+  ) => {
+    return new Promise((resolve) => {
+      alertDialogTitle.textContent = title;
+      alertDialogMessage.textContent = message;
+      alertDialogButtons.innerHTML = "";
+      buttons.forEach((btnInfo) => {
+        const button = document.createElement("button");
+        button.textContent = btnInfo.text;
+        let baseClass = "font-semibold py-2 px-6 rounded-lg transition-colors";
+        if (btnInfo.class === "danger") {
+          button.className = `${baseClass} bg-red-600 text-white hover:bg-red-700`;
+        } else if (btnInfo.class === "secondary") {
+          button.className = `${baseClass} bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500`;
+        } else {
+          button.className = `${baseClass} bg-blue-600 text-white hover:bg-blue-700`;
+        }
+        button.addEventListener("click", () => {
+          alertDialog.classList.add("hidden");
+          resolve(btnInfo.value);
+        });
+        alertDialogButtons.appendChild(button);
+      });
+      alertDialog.classList.remove("hidden");
+    });
+  };
+
   const saveData = () => {
     localStorage.setItem(containersStorageKey, JSON.stringify(containers));
     localStorage.setItem(bookmarksStorageKey, JSON.stringify(bookmarks));
@@ -87,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ? JSON.parse(savedContainers)
       : [{ id: crypto.randomUUID(), title: "Categoria" }];
     bookmarks = savedBookmarks ? JSON.parse(savedBookmarks) : [];
-    activeSearchEngine = savedEngine;
+    activeSearchEngine = savedEngine || "brave";
     currentLayout = savedLayout || "grid";
   };
 
@@ -235,7 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
         dialogTitle.textContent = "Editar Favorito";
         bookmarkIdInput.value = bookmark.id;
         bookmarkNameInput.value = bookmark.name;
-        bookmarkDescriptionInput.value = bookmark.description || " ";
+        bookmarkDescriptionInput.value = bookmark.description || "";
         bookmarkUrlInput.value = bookmark.url;
         dialog.classList.remove("hidden");
       });
@@ -331,12 +365,16 @@ document.addEventListener("DOMContentLoaded", () => {
       "absolute top-3 right-3 w-7 h-7 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center text-lg opacity-0 group-hover/category:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white";
     removeContainerBtn.innerHTML = "&times;";
     removeContainerBtn.ariaLabel = `Remover categoria ${container.title}`;
-    removeContainerBtn.addEventListener("click", () => {
-      if (
-        confirm(
-          `Tem certeza que deseja remover a categoria "${container.title}" e todos os seus favoritos?`
-        )
-      ) {
+    removeContainerBtn.addEventListener("click", async () => {
+      const confirmed = await showModal(
+        `Tem certeza que deseja remover a categoria "${container.title}" e todos os seus favoritos?`,
+        "Confirmar Exclusão",
+        [
+          { text: "Cancelar", class: "secondary", value: false },
+          { text: "Remover", class: "danger", value: true },
+        ]
+      );
+      if (confirmed) {
         containers = containers.filter((c) => c.id !== container.id);
         bookmarks = bookmarks.filter((b) => b.containerId !== container.id);
         saveData();
@@ -585,7 +623,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const data = JSON.parse(event.target.result);
         if (
@@ -593,22 +631,27 @@ document.addEventListener("DOMContentLoaded", () => {
           Array.isArray(data.containers) &&
           Array.isArray(data.bookmarks)
         ) {
-          if (
-            confirm(
-              "Isso irá substituir todos os seus favoritos e categorias atuais. Deseja continuar?"
-            )
-          ) {
+          const confirmed = await showModal(
+            "Isso irá substituir todos os seus favoritos e categorias atuais. Deseja continuar?",
+            "Confirmar Importação",
+            [
+              { text: "Cancelar", class: "secondary", value: false },
+              { text: "Continuar", class: "primary", value: true },
+            ]
+          );
+          if (confirmed) {
             containers = data.containers;
             bookmarks = data.bookmarks;
             saveData();
             render();
           }
         } else {
-          alert("Arquivo de backup inválido.");
+          await showModal("Arquivo de backup inválido.", "Erro");
         }
       } catch (error) {
-        alert(
-          "Erro ao ler o arquivo. Certifique-se de que é um backup válido."
+        await showModal(
+          "Erro ao ler o arquivo. Certifique-se de que é um backup válido.",
+          "Erro na Importação"
         );
         console.error("Erro na importação:", error);
       }
