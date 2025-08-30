@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const bookmarkUrlInput = document.getElementById("bookmark-url");
   const cancelBtn = document.getElementById("cancel-bookmark-btn");
+  const deleteBookmarkBtn = document.getElementById("delete-bookmark-btn");
   const webSearchBar = document.getElementById("web-search-bar");
   const webSearchForm = document.getElementById("web-search-form");
   const webSearchSubmitBtn = document.getElementById("web-search-submit-btn");
@@ -188,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (currentLayout === "list") {
       element.className =
-        "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200";
+        "relative flex items-center justify-between gap-2 group/item p-2 rounded-lg hover:bg-gray-200";
       element.innerHTML = `
                   
                   <a href="${
@@ -207,23 +208,25 @@ document.addEventListener("DOMContentLoaded", () => {
                       <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                       </button>
-                      <button class="remove-bookmark-btn p-1 text-gray-500 hover:text-red-600">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>
                   </div>
               `;
     } else {
       element.className = "relative flex flex-col items-center group/item";
       element.innerHTML = `
-                  <a href="${bookmark.url}" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full">
-                      <img src="${faviconUrl}" alt="Ícone de ${bookmark.name}" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
-                      <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${bookmark.name}</span>
+                  <a href="${
+                    bookmark.url
+                  }" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full" title="${
+        bookmark.description || ""
+      }">
+                      <img src="${faviconUrl}" alt="Ícone de ${
+        bookmark.name
+      }" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
+                      <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${
+                        bookmark.name
+                      }</span>
                   </a>
                   <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                  </button>
-                  <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
               `;
     }
@@ -272,15 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
         bookmarkDescriptionInput.value = bookmark.description || "";
         bookmarkUrlInput.value = bookmark.url;
         dialog.classList.remove("hidden");
+        deleteBookmarkBtn.classList.remove("hidden");
       });
 
-    element
-      .querySelector(".remove-bookmark-btn")
-      .addEventListener("click", () => {
-        bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
-        saveData();
-        render(webSearchBar.value);
-      });
     return element;
   };
 
@@ -442,6 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
       dialogForm.reset();
       activeContainerId = containerId;
       dialog.classList.remove("hidden");
+      deleteBookmarkBtn.classList.add("hidden");
     });
     return addBookmarkBox;
   };
@@ -600,7 +598,26 @@ document.addEventListener("DOMContentLoaded", () => {
       dialog.classList.add("hidden");
     }
   });
+  deleteBookmarkBtn.addEventListener("click", async () => {
+    const id = bookmarkIdInput.value;
+    if (!id) return;
 
+    const confirmed = await showModal(
+      "Tem certeza que deseja remover este favorito?",
+      "Confirmar Exclusão",
+      [
+        { text: "Cancelar", class: "secondary", value: false },
+        { text: "Remover", class: "danger", value: true },
+      ]
+    );
+
+    if (confirmed) {
+      bookmarks = bookmarks.filter((b) => b.id !== id);
+      saveData();
+      render(webSearchBar.value);
+      dialog.classList.add("hidden");
+    }
+  });
   cancelBtn.addEventListener("click", () => dialog.classList.add("hidden"));
   dialog.addEventListener("click", (e) => {
     if (e.target === dialog) cancelBtn.click();
