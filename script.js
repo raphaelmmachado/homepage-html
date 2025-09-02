@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const applyTheme = () => {
-    if (currentTheme === "dark") {
+    if (currentTheme === "light") {
       document.documentElement.classList.add("dark");
       sunIcon.classList.remove("hidden");
       moonIcon.classList.add("hidden");
@@ -272,7 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }">
                           <img src="${faviconUrl}" alt="Ícone de ${
         bookmark.name
-      }" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
+      }" class="w-8 h-8 object-contain mb-2 rounded-md" onerror="this.src='${fallbackIconM}';" />
                           <span class="text-sm font-medium text-gray-700 dark:text-gray-300 break-words text-center w-full px-1">${
                             bookmark.name
                           }</span>
@@ -514,12 +514,16 @@ document.addEventListener("DOMContentLoaded", () => {
   webSearchBar.addEventListener("input", (e) => render(e.target.value));
 
   webSearchBar.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown") {
-      const firstResultLink = searchResultsWrapper.querySelector("a[href]");
-      if (firstResultLink) {
-        e.preventDefault();
-        firstResultLink.focus();
-      }
+    if (e.key === "Tab") {
+      setTimeout(() => {
+        if (searchResultsWrapper.childElementCount > 0) {
+          const firstResultLink = searchResultsWrapper.querySelector("a[href]");
+          if (firstResultLink) {
+            e.preventDefault();
+            firstResultLink.focus();
+          }
+        }
+      }, 0); // espera o próximo ciclo do event loop
     }
   });
 
