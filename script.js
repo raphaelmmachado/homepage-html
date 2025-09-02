@@ -239,11 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
       containersWrapper.classList =
         "grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
       element.className =
-<<<<<<< HEAD
         "relative flex items-center justify-between gap-2 group/item p-2 rounded-lg hover:bg-gray-200";
-=======
-        "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50";
->>>>>>> dark-mode
       element.innerHTML = `
                       <a href="${
                         bookmark.url
@@ -285,33 +281,8 @@ document.addEventListener("DOMContentLoaded", () => {
                       <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
                       </button>
-<<<<<<< HEAD
                   </div>
               `;
-    } else {
-      element.className = "relative flex flex-col items-center group/item";
-      element.innerHTML = `
-                  <a href="${
-                    bookmark.url
-                  }" rel="noopener noreferrer" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 w-full" title="${
-        bookmark.description || ""
-      }">
-                      <img src="${faviconUrl}" alt="Ícone de ${
-        bookmark.name
-      }" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
-                      <span class="text-sm font-medium text-gray-700 break-words text-center w-full px-1">${
-                        bookmark.name
-                      }</span>
-                  </a>
-                  <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                  </button>
-              `;
-=======
-                      <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>`;
->>>>>>> dark-mode
     }
     element.addEventListener("dragstart", (e) => {
       e.stopPropagation();
@@ -355,17 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
         dialog.classList.remove("hidden");
         deleteBookmarkBtn.classList.remove("hidden");
       });
-<<<<<<< HEAD
-
-=======
-    element
-      .querySelector(".remove-bookmark-btn")
-      .addEventListener("click", () => {
-        bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
-        saveData();
-        render(webSearchBar.value);
-      });
->>>>>>> dark-mode
     return element;
   };
 
