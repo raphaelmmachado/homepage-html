@@ -235,8 +235,8 @@ document.addEventListener("DOMContentLoaded", () => {
     element.setAttribute("draggable", "true");
     element.dataset.id = bookmark.id;
     if (currentLayout === "list") {
-      containersWrapper.classList.add("justify-center");
-      containersWrapper.classList.remove("justify-start");
+      containersWrapper.classList =
+        "grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
       element.className =
         "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50";
       element.innerHTML = `
@@ -261,8 +261,8 @@ document.addEventListener("DOMContentLoaded", () => {
                           </button>
                       </div>`;
     } else {
-      containersWrapper.classList.remove("justify-center");
-      containersWrapper.classList.add("justify-start");
+      containersWrapper.classList =
+        "grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6";
       element.className = "relative flex flex-col items-center group/item w-20";
       element.innerHTML = `
                       <a href="${
@@ -459,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
                       <span class="text-sm">Adicionar</span>`;
     } else {
       addBookmarkBox.className +=
-        ` flex flex-col items-center justify-center p-2 cursor-pointer text-gray-500 w-20 transition-opacity duration-300` +
+        ` flex flex-col items-center justify-center p-2 cursor-pointer text-gray-500 transition-opacity duration-300` +
         (hasBookmarks ? " opacity-0 group-hover/category:opacity-100" : "");
       addBookmarkBox.innerHTML = `
                       <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 transition-colors">
