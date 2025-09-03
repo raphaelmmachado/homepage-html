@@ -229,9 +229,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createContainerElement = (container, containerBookmarks) => {
     const element = document.createElement("div");
-    element.className =
-      "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative group/category transition-all w-full md:w-auto md:min-w-[250px]";
+    element.className = `bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative group/category transition-all`;
     element.setAttribute("draggable", "true");
+
     element.dataset.id = container.id;
     element.addEventListener("dragstart", (e) => {
       draggedContainerId = container.id;
@@ -450,17 +450,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const createAddBookmarkBox = (containerId, hasBookmarks) => {
     const addBookmarkBox = document.createElement("div");
     addBookmarkBox.className = "add-bookmark-trigger";
+
+    addBookmarkBox.className = `flex p-2 items-center rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer text-gray-500 transition-opacity duration-300
+    ${currentLayout === "list" ? "" : "flex-col justify-center"}
+    ${hasBookmarks ? "opacity-0 group-hover/category:opacity-100" : ""}`;
+
     if (currentLayout === "list") {
-      addBookmarkBox.className +=
-        ` flex items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer text-gray-500 transition-opacity duration-300` +
-        (hasBookmarks ? " opacity-0 group-hover/category:opacity-100" : "");
       addBookmarkBox.innerHTML = `
                       <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                       <span class="text-sm">Adicionar</span>`;
     } else {
-      addBookmarkBox.className +=
-        ` flex flex-col items-center justify-center p-2 cursor-pointer text-gray-500 transition-opacity duration-300` +
-        (hasBookmarks ? " opacity-0 group-hover/category:opacity-100" : "");
       addBookmarkBox.innerHTML = `
                       <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 transition-colors">
                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -512,7 +511,24 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- MANIPULADORES DE EVENTOS ---
+  document.addEventListener("keydown", (event) => {
+    // FOCO NA BARRA DE PESQUISA AO DIGITAR
+    const key = event.key;
+    const isInputFocused = document.activeElement === webSearchBar;
+    if (key.length === 1 && !isInputFocused) {
+      webSearchBar.focus();
+    }
+  });
+
   webSearchBar.addEventListener("input", (e) => render(e.target.value));
+
+  webSearchBar.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      e.target.value = "";
+      render();
+    }
+  });
+
   // FOCO NO PRIMEIRO RESULTADO AO TAB
   webSearchBar.addEventListener("keydown", (e) => {
     if (e.key === "Tab") {
