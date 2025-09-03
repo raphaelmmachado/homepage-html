@@ -324,9 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const grid = document.createElement("div");
     grid.dataset.id = "container";
     grid.className =
-      currentLayout === "grid"
-        ? "flex flex-wrap break-words gap-2"
-        : "flex flex-col gap-1";
+      currentLayout === "grid" ? "flex flex-wrap gap-2" : "flex flex-col gap-1";
     containerBookmarks.forEach((bookmark) =>
       grid.appendChild(createBookmarkElement(bookmark))
     );
@@ -437,6 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
         bookmarkDescriptionInput.value = bookmark.description || "";
         bookmarkUrlInput.value = bookmark.url;
         dialog.classList.remove("hidden");
+        deleteBookmarkBtn.classList.remove("hidden");
       });
     element
       .querySelector(".remove-bookmark-btn")
