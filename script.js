@@ -48,6 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchResultsWrapper = document.getElementById(
     "search-results-wrapper"
   );
+  const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+  const mobileMenuDropdown = document.getElementById("mobile-menu-dropdown");
+  const mobileMenuItemsContainer = document.getElementById("mobile-menu-items");
   const appDiv = document.getElementById("app");
 
   // --- DEFINIÇÕES DE MECANISMOS DE BUSCA ---
@@ -280,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
     titleElement.addEventListener("click", () => {
       const input = document.createElement("input");
       input.type = "text";
+      input.dataset.role = "change text";
       input.value = container.title;
       input.className =
         "text-xl font-bold text-gray-800 dark:text-gray-200 title-input";
@@ -365,11 +369,10 @@ document.addEventListener("DOMContentLoaded", () => {
                       </a>
                       <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
                           <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+
                           </button>
-                          <button class="remove-bookmark-btn p-1 text-gray-500 hover:text-red-600">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                          </button>
+                          
                       </div>`;
     } else {
       containersWrapper.classList =
@@ -389,11 +392,9 @@ document.addEventListener("DOMContentLoaded", () => {
                           }</span>
                       </a>
                       <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
                       </button>
-                      <button class="remove-bookmark-btn absolute top-0 right-0 p-1 text-gray-500 hover:text-red-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>`;
+                      `;
     }
     element.addEventListener("dragstart", (e) => {
       e.stopPropagation();
@@ -437,13 +438,13 @@ document.addEventListener("DOMContentLoaded", () => {
         dialog.classList.remove("hidden");
         deleteBookmarkBtn.classList.remove("hidden");
       });
-    element
-      .querySelector(".remove-bookmark-btn")
-      .addEventListener("click", () => {
-        bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
-        saveData();
-        render(webSearchBar.value);
-      });
+    // element
+    //   .querySelector(".remove-bookmark-btn")
+    //   .addEventListener("click", () => {
+    //     bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
+    //     saveData();
+    //     render(webSearchBar.value);
+    //   });
     return element;
   };
 
@@ -469,6 +470,7 @@ document.addEventListener("DOMContentLoaded", () => {
     addBookmarkBox.addEventListener("click", () => {
       dialogTitle.textContent = "Adicionar novo site favorito";
       dialogForm.reset();
+      bookmarkIdInput.value = "";
       activeContainerId = containerId;
       dialog.classList.remove("hidden");
       deleteBookmarkBtn.classList.add("hidden");
@@ -487,6 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = "Nome da Nova Categoria";
+      input.dataset.role = "change text";
       input.className =
         "text-xl font-bold text-gray-800 dark:text-gray-200 title-input text-center";
       const saveNew = () => {
@@ -514,8 +517,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", (event) => {
     // FOCO NA BARRA DE PESQUISA AO DIGITAR
     const key = event.key;
-    const isInputFocused = document.activeElement === webSearchBar;
-    if (key.length === 1 && !isInputFocused) {
+    if (
+      key.length === 1 &&
+      dialog.classList.contains("hidden") &&
+      document.activeElement.dataset.role !== "change text"
+    ) {
       webSearchBar.focus();
     }
   });
@@ -568,6 +574,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (e.key === "Enter" && document.activeElement.tagName === "A") {
       e.preventDefault();
       document.activeElement.click();
+    } else if (e.key === "Escape" && document.activeElement.tagName === "A") {
+      webSearchBar.value = "";
+      render();
     }
   });
 
@@ -741,10 +750,68 @@ document.addEventListener("DOMContentLoaded", () => {
   layoutToggleBtn.addEventListener("click", toggleLayout);
   themeToggleBtn.addEventListener("click", toggleTheme);
 
+  const populateMobileMenu = () => {
+    const createMenuItem = (text, iconSvg, clickHandler) => {
+      const item = document.createElement("button");
+      item.className =
+        "w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
+      item.innerHTML = `<div class="w-6 h-6 flex items-center justify-center">${iconSvg}</div><span>${text}</span>`;
+      item.addEventListener("click", () => {
+        clickHandler();
+        mobileMenuDropdown.classList.add("hidden");
+      });
+      return item;
+    };
+
+    const themeIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`;
+    const layoutIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>`;
+
+    const menuItems = [
+      { text: "Alterar Tema", handler: toggleTheme, icon: themeIconSvg },
+      { text: "Alterar Layout", handler: toggleLayout, icon: layoutIconSvg },
+      {
+        text: "Importar Favoritos",
+        handler: () => importBtn.click(),
+        icon: importBtn.innerHTML,
+      },
+      {
+        text: "Salvar Favoritos",
+        handler: () => exportBtn.click(),
+        icon: exportBtn.innerHTML,
+      },
+    ];
+
+    mobileMenuItemsContainer.innerHTML = "";
+    menuItems.forEach((itemInfo) => {
+      const item = createMenuItem(
+        itemInfo.text,
+        itemInfo.icon,
+        itemInfo.handler
+      );
+      mobileMenuItemsContainer.appendChild(item);
+    });
+  };
+
+  mobileMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    mobileMenuDropdown.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!mobileMenuBtn.contains(e.target)) {
+      mobileMenuDropdown.classList.add("hidden");
+    }
+  });
+
+  mobileMenuDropdown.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
   // --- INICIALIZAÇÃO ---
   loadData();
   updateSearchEngineUI();
   applyLayout();
   applyTheme();
+  populateMobileMenu();
   webSearchBar.focus();
 });

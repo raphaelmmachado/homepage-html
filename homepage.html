@@ -38,7 +38,7 @@
         <button
           id="theme-toggle-btn"
           title="Alterar Tema"
-          class="text-amber-400 dark:text-gray-300 hover:bg-amber-200 dark:hover:bg-gray-700 p-3 rounded-full"
+          class="hidden sm:block text-amber-400 dark:text-gray-300 hover:bg-amber-200 dark:hover:bg-gray-700 p-3 rounded-full"
         >
           <svg
             id="theme-icon-sun"
@@ -69,7 +69,7 @@
             width="24"
             height="24"
             viewBox="0 0 24 24"
-            fill="currentColor"
+            fill="none"
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
@@ -83,7 +83,7 @@
         <button
           id="layout-toggle-btn"
           title="Alterar Layout"
-          class="text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 p-3 rounded-full"
+          class="hidden sm:block text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 p-3 rounded-full"
         >
           <svg
             id="layout-icon-grid"
@@ -102,6 +102,7 @@
             <rect x="14" y="14" width="7" height="7"></rect>
             <rect x="3" y="14" width="7" height="7"></rect>
           </svg>
+
           <svg
             id="layout-icon-list"
             xmlns="http://www.w3.org/2000/svg"
@@ -115,12 +116,12 @@
             stroke-linejoin="round"
             class="hidden"
           >
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            <rect width="7" height="7" x="3" y="3" rx="1" />
+            <rect width="7" height="7" x="3" y="14" rx="1" />
+            <path d="M14 4h7" />
+            <path d="M14 9h7" />
+            <path d="M14 15h7" />
+            <path d="M14 20h7" />
           </svg>
         </button>
         <form
@@ -170,11 +171,41 @@
             </svg>
           </button>
         </form>
-
+        <!-- Dropdown para Mobile (visível apenas em telas pequenas) -->
+        <div class="relative sm:hidden">
+          <button
+            id="mobile-menu-btn"
+            title="Mais opções"
+            class="text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 p-3 rounded-full"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-down-icon lucide-chevron-down"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+          <div
+            id="mobile-menu-dropdown"
+            class="hidden absolute right-0 mt-2 w-56 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
+          >
+            <div id="mobile-menu-items" class="py-1" role="menu">
+              <!-- Itens do menu serão injetados aqui via JavaScript -->
+            </div>
+          </div>
+        </div>
         <button
           id="import-btn"
           title="Importar Favoritos"
-          class="bg-gray-600 text-white p-3 rounded-full shadow-md hover:bg-gray-700 transition-colors"
+          class="hidden sm:block bg-gray-600 text-white p-3 rounded-full shadow-md hover:bg-gray-700 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -195,7 +226,7 @@
         <button
           id="export-btn"
           title="Salvar Favoritos"
-          class="bg-blue-600 text-white p-3 rounded-full shadow-md hover:bg-blue-700 transition-colors"
+          class="hidden sm:block bg-blue-600 text-white p-3 rounded-full shadow-md hover:bg-blue-700 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
