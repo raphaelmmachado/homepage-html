@@ -347,7 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
     element.dataset.id = bookmark.id;
     if (currentLayout === "list") {
       containersWrapper.classList =
-        "grid xl:grid-cols-5  lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
+        "grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
       element.className =
         "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50";
       element.innerHTML = `
@@ -737,8 +737,6 @@ document.addEventListener("DOMContentLoaded", () => {
     reader.readAsText(file);
     e.target.value = "";
   });
-
-  if (window.innerWidth <= 425) currentLayout = "grid";
 
   layoutToggleBtn.addEventListener("click", toggleLayout);
   themeToggleBtn.addEventListener("click", toggleTheme);
