@@ -191,6 +191,9 @@ document.addEventListener("DOMContentLoaded", () => {
     engineSelectorBtn.innerHTML = searchEngines[activeSearchEngine].icon;
     localStorage.setItem(searchEngineStorageKey, activeSearchEngine);
     webSearchBar.placeholder = `Pesquisar com ${searchEngines[activeSearchEngine].name} ou digite uma URL...`;
+    if (searchEngines[activeSearchEngine].name === "Tradutor")
+      webSearchBar.placeholder =
+        "parametros: [Pesquisa] [idioma fonte (en)] [idioma destino (pt)]";
   };
 
   const applyLayout = () => {
@@ -587,18 +590,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/i;
       if (urlPattern.test(query)) {
         let url = query;
+        //se for url, ir direto
         if (!/^https?:\/\//i.test(url)) {
           url = "https://" + url;
         }
         window.open(url, "_blank");
       } else {
+        // GOOGLE TRANSLATE
         if (searchEngines[activeSearchEngine].name === "Tradutor") {
-          window.open(
-            `https://translate.google.com.br/?sl=auto&tl=pt&text=${encodeURIComponent(
-              query
-            )}&op=translate`,
-            "_blank"
-          );
+          q = query.split(" ");
+          const url = `https://translate.google.com.br/?sl=${
+            q[1] && q[1].length === 2 ? q[1] : "auto"
+          }&tl=${
+            q[2] && q[2].length === 2 ? q[2] : "pt"
+          }&text=${encodeURIComponent(q[0])}&op=translate`;
+
+          window.open(url);
         } else {
           window.open(
             searchEngines[activeSearchEngine].url + encodeURIComponent(query),
