@@ -269,6 +269,40 @@
       <div id="containers-wrapper" class="flex gap-6 justify-start">
         <!-- As categorias e o botão de adicionar serão inseridos aqui -->
       </div>
+      <!-- Added article input form at bottom of page -->
+      <div class="rounded-lg my-6">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+          Adicionar Artigo
+        </h3>
+        <form id="article-form" class="flex gap-3">
+          <input
+            type="url"
+            data-role="change text"
+            id="article-url-input"
+            placeholder="Cole o URL do artigo aqui..."
+            required
+            class="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
+          />
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
+          >
+            Adicionar
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Added articles wrapper section for read later feature -->
+    <div id="articles-section" class="container mx-auto p-4 md:p-8 max-w-7xl">
+      <div class="">
+        <div
+          id="articles-wrapper"
+          class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6"
+        >
+          <!-- Articles will be inserted here -->
+        </div>
+      </div>
     </div>
 
     <!-- Modal para adicionar/editar favorito -->
