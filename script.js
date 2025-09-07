@@ -309,10 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
     removeContainerBtn.className =
       "absolute top-3 right-3 w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center text-lg opacity-0 group-hover/category:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white";
     removeContainerBtn.innerHTML = "&times;";
-    removeContainerBtn.ariaLabel = `Remover categoria ${container.title}`;
+    removeContainerBtn.ariaLabel = `Remover pasta ${container.title}`;
     removeContainerBtn.addEventListener("click", async () => {
       const confirmed = await showModal(
-        `Tem certeza que deseja remover a categoria "${container.title}" e todos os seus favoritos?`,
+        `Tem certeza que deseja remover a pasta "${container.title}" e todos os seus favoritos?`,
         "Confirmar Exclusão",
         [
           { text: "Cancelar", class: "secondary", value: false },
@@ -327,7 +327,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
     header.appendChild(titleElement);
+
     element.appendChild(removeContainerBtn);
+
     const grid = document.createElement("div");
     grid.dataset.id = "container";
     grid.className =
@@ -441,13 +443,6 @@ document.addEventListener("DOMContentLoaded", () => {
         dialog.classList.remove("hidden");
         deleteBookmarkBtn.classList.remove("hidden");
       });
-    // element
-    //   .querySelector(".remove-bookmark-btn")
-    //   .addEventListener("click", () => {
-    //     bookmarks = bookmarks.filter((b) => b.id !== bookmark.id);
-    //     saveData();
-    //     render(webSearchBar.value);
-    //   });
     return element;
   };
 
@@ -487,11 +482,11 @@ document.addEventListener("DOMContentLoaded", () => {
       "cursor-pointer bg-white/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600 px-8 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex items-center justify-center min-h-[148px]";
     const addTitle = document.createElement("h2");
     addTitle.className = "text-xl font-bold text-gray-400 text-center";
-    addTitle.textContent = "+ Adicionar Categoria";
+    addTitle.textContent = "+ Adicionar Pasta";
     addContainerBox.addEventListener("click", () => {
       const input = document.createElement("input");
       input.type = "text";
-      input.placeholder = "Nome da Nova Categoria";
+      input.placeholder = "Nome da Pasta";
       input.dataset.role = "change text";
       input.className =
         "text-xl font-bold text-gray-800 dark:text-gray-200 title-input text-center";
@@ -605,7 +600,7 @@ document.addEventListener("DOMContentLoaded", () => {
             q[2] && q[2].length === 2 ? q[2] : "pt"
           }&text=${encodeURIComponent(q[0])}&op=translate`;
 
-          window.open(url);
+          window.open(url, "_blank");
         } else {
           window.open(
             searchEngines[activeSearchEngine].url + encodeURIComponent(query),
