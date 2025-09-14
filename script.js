@@ -495,9 +495,10 @@ document.addEventListener("DOMContentLoaded", () => {
       element.innerHTML = `
                       <a href="${
                         bookmark.url
-                      }" rel="noopener noreferrer" target="_blank" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200 w-full" title="${
-        bookmark.description || ""
-      }">
+                      }" rel="noopener noreferrer" target="_blank"
+                        class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200" title="${
+                          bookmark.description || ""
+                        }">
                           <img src="${faviconUrl}" alt="Ícone de ${
         bookmark.name
       }" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
@@ -703,11 +704,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // GOOGLE TRANSLATE
         if (searchEngines[activeSearchEngine].name === "Tradutor") {
           q = query.split(" ");
-          const url = `https://translate.google.com.br/?sl=${
-            q[1] && q[1].length === 2 ? q[1] : "auto"
-          }&tl=${
-            q[2] && q[2].length === 2 ? q[2] : "pt"
-          }&text=${encodeURIComponent(q[0])}&op=translate`;
+          let url = ``;
+          // se as penultima e ultima palavras foram preenchidas e contem duas letras, atribuir essa letra ao parametro de idioma da url do google translator. se não, atribuir valor default
+          if (q[q.length - 2].length === 2 && q[q.length - 1].length === 2) {
+            url = `https://translate.google.com.br/?sl=${q[q.length - 2]}&tl=${
+              q[q.length - 2]
+            }&text=${encodeURIComponent(q[0])}&op=translate`;
+          } else {
+            url = `https://translate.google.com.br/?sl=auto&tl=pt&text=${encodeURIComponent(
+              query
+            )}&op=translate`;
+          }
 
           window.open(url, "_blank");
         } else {
