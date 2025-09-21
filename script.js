@@ -491,12 +491,13 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       containersWrapper.classList =
         "grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6";
-      element.className = "relative flex flex-col items-center group/item w-20";
+      element.className =
+        "relative flex flex-col items-center group/item w-20 rounded-lg  hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200";
       element.innerHTML = `
                       <a href="${
                         bookmark.url
                       }" rel="noopener noreferrer" target="_blank"
-                        class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200" title="${
+                        class="flex flex-col items-center p-2" title="${
                           bookmark.description || ""
                         }">
                           <img src="${faviconUrl}" alt="Ícone de ${
@@ -657,6 +658,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 30); // espera o próximo ciclo do event loop
     }
   });
+
   // NAVEGAÇÃO COM TECLADO NOS RESULTADOS DE PESQUISA
   searchResultsWrapper.addEventListener("keydown", (e) => {
     if (e.key === "ArrowUp" || e.key === "ArrowDown") {
