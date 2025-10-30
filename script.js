@@ -63,7 +63,12 @@ document.addEventListener("DOMContentLoaded", () => {
     brave: {
       name: "Brave",
       url: "https://search.brave.com/search?q=",
-      icon: `<svg width=24 height=24 id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 436.49 511.97"><defs><style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:#fff;}</style><linearGradient id="linear-gradient" x1="-18.79" y1="359.73" x2="194.32" y2="359.73" gradientTransform="matrix(2.05, 0, 0, -2.05, 38.49, 992.77)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f1562b"/><stop offset="0.3" stop-color="#f1542b"/><stop offset="0.41" stop-color="#f04d2a"/><stop offset="0.49" stop-color="#ef4229"/><stop offset="0.5" stop-color="#ef4029"/><stop offset="0.56" stop-color="#e83e28"/><stop offset="0.67" stop-color="#e13c26"/><stop offset="1" stop-color="#df3c26"/></linearGradient></defs><title>brave-browser</title><path class="cls-1" d="M436.49,165.63,420.7,122.75l11-24.6A8.47,8.47,0,0,0,430,88.78L400.11,58.6a48.16,48.16,0,0,0-50.23-11.66l-8.19,2.89L296.09.43,218.25,0,140.4.61,94.85,50.41l-8.11-2.87A48.33,48.33,0,0,0,36.19,59.3L5.62,90.05a6.73,6.73,0,0,0-1.36,7.47l11.47,25.56L0,165.92,56.47,380.64a89.7,89.7,0,0,0,34.7,50.23l111.68,75.69a24.73,24.73,0,0,0,30.89,0l111.62-75.8A88.86,88.86,0,0,0,380,380.53l46.07-176.14Z"/><path class="cls-2" d="M231,317.33a65.61,65.61,0,0,0-9.11-3.3h-5.49a66.08,66.08,0,0,0-9.11,3.3l-13.81,5.74-15.6,7.18-25.4,13.24a4.84,4.84,0,0,0-.62,9l22.06,15.49q7,5,13.55,10.76l6.21,5.35,13,11.37,5.89,5.2a10.15,10.15,0,0,0,12.95,0l25.39-22.18,13.6-10.77,22.06-15.79a4.8,4.8,0,0,0-.68-8.93l-25.36-12.8L244.84,323ZM387.4,175.2l.8-2.3a61.26,61.26,0,0,0-.57-9.18,73.51,73.51,0,0,0-8.19-15.44l-14.35-21.06-10.22-13.88-19.23-24a69.65,69.65,0,0,0-5.7-6.67h-.4L321,84.25l-42.27,8.14a33.49,33.49,0,0,1-12.59-1.84l-23.21-7.5-16.61-4.59a70.52,70.52,0,0,0-14.67,0L195,83.1l-23.21,7.54a33.89,33.89,0,0,1-12.59,1.84l-42.22-8-8.54-1.58h-.4a65.79,65.79,0,0,0-5.7,6.67l-19.2,24Q77.81,120.32,73,127.45L58.61,148.51l-6.78,11.31a51,51,0,0,0-1.94,13.35l.8,2.3A34.51,34.51,0,0,0,52,179.81l11.33,13,50.23,53.39a14.31,14.31,0,0,1,2.55,14.34L107.68,280a25.23,25.23,0,0,0-.39,16l1.64,4.52a43.58,43.58,0,0,0,13.39,18.76l7.89,6.43a15,15,0,0,0,14.35,1.72L172.62,314A70.38,70.38,0,0,0,187,304.52l22.46-20.27a9,9,0,0,0,3-6.36,9.08,9.08,0,0,0-2.5-6.56L159.2,237.18a9.83,9.83,0,0,1-3.09-12.45l19.66-36.95a19.21,19.21,0,0,0,1-14.67A22.37,22.37,0,0,0,165.58,163L103.94,139.8c-4.44-1.6-4.2-3.6.51-3.88l36.2-3.59a55.9,55.9,0,0,1,16.9,1.5l31.5,8.8a9.64,9.64,0,0,1,6.74,10.76L183.42,221a34.72,34.72,0,0,0-.61,11.41c.5,1.61,4.73,3.6,9.36,4.73l19.19,4a46.38,46.38,0,0,0,16.86,0l17.26-4c4.64-1,8.82-3.23,9.35-4.85a34.94,34.94,0,0,0-.63-11.4l-12.45-67.59a9.66,9.66,0,0,1,6.74-10.76l31.5-8.83a55.87,55.87,0,0,1,16.9-1.5l36.2,3.37c4.74.44,5,2.2.54,3.88L272,162.79a22.08,22.08,0,0,0-11.16,10.12,19.3,19.3,0,0,0,1,14.67l19.69,36.95A9.84,9.84,0,0,1,278.45,237l-50.66,34.23a9,9,0,0,0,.32,12.78l.15.14,22.49,20.27a71.46,71.46,0,0,0,14.35,9.47l28.06,13.35a14.89,14.89,0,0,0,14.34-1.76l7.9-6.45a43.53,43.53,0,0,0,13.38-18.8l1.65-4.52a25.27,25.27,0,0,0-.39-16l-8.26-19.49a14.4,14.4,0,0,1,2.55-14.35l50.23-53.45,11.3-13a35.8,35.8,0,0,0,1.54-4.24Z"/></svg>`,
+      icon: `<svg width="24" height="24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 436.49 511.97"><defs><style>.cls-1{fill:url(#linear-gradient);}.cls-2{fill:#fff;}</style><linearGradient id="linear-gradient" x1="-18.79" y1="359.73" x2="194.32" y2="359.73" gradientTransform="matrix(2.05, 0, 0, -2.05, 38.49, 992.77)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#f1562b"/><stop offset="0.3" stop-color="#f1542b"/><stop offset="0.41" stop-color="#f04d2a"/><stop offset="0.49" stop-color="#ef4229"/><stop offset="0.5" stop-color="#ef4029"/><stop offset="0.56" stop-color="#e83e28"/><stop offset="0.67" stop-color="#e13c26"/><stop offset="1" stop-color="#df3c26"/></linearGradient></defs><title>brave-browser</title><path class="cls-1" d="M436.49,165.63,420.7,122.75l11-24.6A8.47,8.47,0,0,0,430,88.78L400.11,58.6a48.16,48.16,0,0,0-50.23-11.66l-8.19,2.89L296.09.43,218.25,0,140.4.61,94.85,50.41l-8.11-2.87A48.33,48.33,0,0,0,36.19,59.3L5.62,90.05a6.73,6.73,0,0,0-1.36,7.47l11.47,25.56L0,165.92,56.47,380.64a89.7,89.7,0,0,0,34.7,50.23l111.68,75.69a24.73,24.73,0,0,0,30.89,0l111.62-75.8A88.86,88.86,0,0,0,380,380.53l46.07-176.14Z"/><path class="cls-2" d="M231,317.33a65.61,65.61,0,0,0-9.11-3.3h-5.49a66.08,66.08,0,0,0-9.11,3.3l-13.81,5.74-15.6,7.18-25.4,13.24a4.84,4.84,0,0,0-.62,9l22.06,15.49q7,5,13.55,10.76l6.21,5.35,13,11.37,5.89,5.2a10.15,10.15,0,0,0,12.95,0l25.39-22.18,13.6-10.77,22.06-15.79a4.8,4.8,0,0,0-.68-8.93l-25.36-12.8L244.84,323ZM387.4,175.2l.8-2.3a61.26,61.26,0,0,0-.57-9.18,73.51,73.51,0,0,0-8.19-15.44l-14.35-21.06-10.22-13.88-19.23-24a69.65,69.65,0,0,0-5.7-6.67h-.4L321,84.25l-42.27,8.14a33.49,33.49,0,0,1-12.59-1.84l-23.21-7.5-16.61-4.59a70.52,70.52,0,0,0-14.67,0L195,83.1l-23.21,7.54a33.89,33.89,0,0,1-12.59,1.84l-42.22-8-8.54-1.58h-.4a65.79,65.79,0,0,0-5.7,6.67l-19.2,24Q77.81,120.32,73,127.45L58.61,148.51l-6.78,11.31a51,51,0,0,0-1.94,13.35l.8,2.3A34.51,34.51,0,0,0,52,179.81l11.33,13,50.23,53.39a14.31,14.31,0,0,1,2.55,14.34L107.68,280a25.23,25.23,0,0,0-.39,16l1.64,4.52a43.58,43.58,0,0,0,13.39,18.76l7.89,6.43a15,15,0,0,0,14.35,1.72L172.62,314A70.38,70.38,0,0,0,187,304.52l22.46-20.27a9,9,0,0,0,3-6.36,9.08,9.08,0,0,0-2.5-6.56L159.2,237.18a9.83,9.83,0,0,1-3.09-12.45l19.66-36.95a19.21,19.21,0,0,0,1-14.67A22.37,22.37,0,0,0,165.58,163L103.94,139.8c-4.44-1.6-4.2-3.6.51-3.88l36.2-3.59a55.9,55.9,0,0,1,16.9,1.5l31.5,8.8a9.64,9.64,0,0,1,6.74,10.76L183.42,221a34.72,34.72,0,0,0-.61,11.41c.5,1.61,4.73,3.6,9.36,4.73l19.19,4a46.38,46.38,0,0,0,16.86,0l17.26-4c4.64-1,8.82-3.23,9.35-4.85a34.94,34.94,0,0,0-.63-11.4l-12.45-67.59a9.66,9.66,0,0,1,6.74-10.76l31.5-8.83a55.87,55.87,0,0,1,16.9-1.5l36.2,3.37c4.74.44,5,2.2.54,3.88L272,162.79a22.08,22.08,0,0,0-11.16,10.12,19.3,19.3,0,0,0,1,14.67l19.69,36.95A9.84,9.84,0,0,1,278.45,237l-50.66,34.23a9,9,0,0,0,.32,12.78l.15.14,22.49,20.27a71.46,71.46,0,0,0,14.35,9.47l28.06,13.35a14.89,14.89,0,0,0,14.34-1.76l7.9-6.45a43.53,43.53,0,0,0,13.38-18.8l1.65-4.52a25.27,25.27,0,0,0-.39-16l-8.26-19.49a14.4,14.4,0,0,1,2.55-14.35l50.23-53.45,11.3-13a35.8,35.8,0,0,0,1.54-4.24Z"/></svg>`,
+    },
+    grok_pedia: {
+      name: "Grokpedia",
+      url: "https://grokipedia.com/search?q=",
+      icon: `<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 509.641"><path d="M115.612 0h280.776C459.975 0 512 52.026 512 115.612v278.416c0 63.587-52.025 115.613-115.612 115.613H115.612C52.026 509.641 0 457.615 0 394.028V115.612C0 52.026 52.026 0 115.612 0z"/><path fill="#fff" d="M213.235 306.019l178.976-180.002v.169l51.695-51.763c-.924 1.32-1.86 2.605-2.785 3.89-39.281 54.164-58.46 80.649-43.07 146.922l-.09-.101c10.61 45.11-.744 95.137-37.398 131.836-46.216 46.306-120.167 56.611-181.063 14.928l42.462-19.675c38.863 15.278 81.392 8.57 111.947-22.03 30.566-30.6 37.432-75.159 22.065-112.252-2.92-7.025-11.67-8.795-17.792-4.263l-124.947 92.341zm-25.786 22.437l-.033.034L68.094 435.217c7.565-10.429 16.957-20.294 26.327-30.149 26.428-27.803 52.653-55.359 36.654-94.302-21.422-52.112-8.952-113.177 30.724-152.898 41.243-41.254 101.98-51.661 152.706-30.758 11.23 4.172 21.016 10.114 28.638 15.639l-42.359 19.584c-39.44-16.563-84.629-5.299-112.207 22.313-37.298 37.308-44.84 102.003-1.128 143.81z"/></svg>`,
     },
     google: {
       name: "Google",
@@ -172,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const element = document.createElement("div");
     element.className =
       "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow group relative";
-
+    // adicionar target="_blank" ao element <a> para abrir em nova guia
     element.innerHTML = `
       <div class="flex flex-col h-full">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 line-clamp-2">${
@@ -186,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
             article.dateAdded
           ).toLocaleDateString("pt-BR")}</span>
           <div class="flex gap-2">
-            <a href="${article.url}" target="_blank" rel="noopener noreferrer" 
+            <a href="${article.url}"  rel="noopener noreferrer" 
                class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
               Ler
             </a>
@@ -468,10 +473,11 @@ document.addEventListener("DOMContentLoaded", () => {
         "grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
       element.className =
         "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50";
+      // adicionar target="_blank" ao element <a> para abrir em nova guia
       element.innerHTML = `
                       <a href="${
                         bookmark.url
-                      }" rel="noopener noreferrer" target="_blank" class="flex items-center flex-grow" title="${
+                      }" rel="noopener noreferrer" class="flex items-center flex-grow" title="${
         bookmark.description || ""
       }">
                           <img src="${faviconUrl}" alt="${
@@ -494,9 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
       element.className =
         "relative flex flex-col items-center group/item w-20 rounded-lg  hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200";
       element.innerHTML = `
-                      <a href="${
-                        bookmark.url
-                      }" rel="noopener noreferrer" target="_blank"
+                      <a href="${bookmark.url}" rel="noopener noreferrer"
                         class="flex flex-col items-center p-2" title="${
                           bookmark.description || ""
                         }">
@@ -646,7 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // FOCO NO PRIMEIRO RESULTADO AO TAB
   webSearchBar.addEventListener("keydown", (e) => {
-    if (e.key === "Tab") {
+    if (e.key === "Tab" || e.key === "ArrowDown") {
       setTimeout(() => {
         if (searchResultsWrapper.childElementCount > 0) {
           const firstResultLink = searchResultsWrapper.querySelector("a[href]");
@@ -701,16 +705,21 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!/^https?:\/\//i.test(url)) {
           url = "https://" + url;
         }
-        window.open(url, "_blank");
+        window.open(url, "_self");
       } else {
         // GOOGLE TRANSLATE
         if (searchEngines[activeSearchEngine].name === "Tradutor") {
           q = query.split(" ");
           let url = ``;
+
           // se as penultima e ultima palavras foram preenchidas e contem duas letras, atribuir essa letra ao parametro de idioma da url do google translator. se não, atribuir valor default
-          if (q[q.length - 2].length === 2 && q[q.length - 1].length === 2) {
+          if (
+            q.length >= 2 &&
+            q[q.length - 2].length === 2 &&
+            q[q.length - 1].length === 2
+          ) {
             url = `https://translate.google.com.br/?sl=${q[q.length - 2]}&tl=${
-              q[q.length - 2]
+              q[q.length - 1]
             }&text=${encodeURIComponent(q[0])}&op=translate`;
           } else {
             url = `https://translate.google.com.br/?sl=auto&tl=pt&text=${encodeURIComponent(
@@ -718,12 +727,13 @@ document.addEventListener("DOMContentLoaded", () => {
             )}&op=translate`;
           }
 
-          window.open(url, "_blank");
+          window.open(url, "_self");
         } else {
-          window.open(
-            searchEngines[activeSearchEngine].url + encodeURIComponent(query),
-            "_blank"
-          );
+          // ANY OTHER SEARCH ENGINE
+          const engine_url = searchEngines[activeSearchEngine].url;
+          const fixed_query = encodeURIComponent(query).replace(/%20/g, "+");
+
+          window.open(`${engine_url}${fixed_query}`, "_self");
         }
       }
     }
