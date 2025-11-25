@@ -640,18 +640,11 @@ document.addEventListener("DOMContentLoaded", () => {
       webSearchBar.focus();
     }
   });
-
+  // RENDERIZAÇÃO DINÂMICA DOS RESULTADOS DE PESQUISA
   webSearchBar.addEventListener("input", (e) => render(e.target.value));
 
   webSearchBar.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      e.target.value = "";
-      render();
-    }
-  });
-
-  // FOCO NO PRIMEIRO RESULTADO AO TAB
-  webSearchBar.addEventListener("keydown", (e) => {
+    // FOCO NO PRIMEIRO RESULTADO AO TAB
     if (e.key === "Tab" || e.key === "ArrowDown") {
       setTimeout(() => {
         if (searchResultsWrapper.childElementCount > 0) {
@@ -662,6 +655,26 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
       }, 30); // espera o próximo ciclo do event loop
+    }
+    // LIMPAR PESQUISA COM ESCAPE
+    if (e.key === "Escape") {
+      e.target.value = "";
+      render();
+    }
+    // SETA PARA CIMA ALTERA MECANISMO DE PESQUISA
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const engineKeys = Object.keys(searchEngines);
+      let currentIndex = engineKeys.indexOf(activeSearchEngine);
+
+      // adiciona engineKeys.length para evitar resultado negativo no modulo
+      // subtrai 1 para ir para o mecanismo anterior / adiciona para ir para o próximo
+      // usa modulo para circular entre os mecanismos
+      // ex: se currentIndex for 0, (0 - 1 + 5) % 5 = 4 (último índice)
+
+      currentIndex = (currentIndex + 1 + engineKeys.length) % engineKeys.length;
+      activeSearchEngine = engineKeys[currentIndex];
+      updateSearchEngineUI();
     }
   });
 
