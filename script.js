@@ -463,11 +463,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const createBookmarkElement = (bookmark) => {
     const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
-    const fallbackIconM = "https://placehold.co/32x32/eeeeee/999999?text=?";
-    const fallbackIconS = "https://placehold.co/24x24/eeeeee/999999?text=?";
+
     const element = document.createElement("div");
     element.setAttribute("draggable", "true");
     element.dataset.id = bookmark.id;
+    // SE LAYOUT FOR LISTA
     if (currentLayout === "list") {
       containersWrapper.classList =
         "grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
@@ -482,7 +482,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }">
                           <img src="${faviconUrl}" alt="${
         bookmark.name
-      }" class="w-6 h-6 object-contain mr-3 rounded" onerror="this.src='${fallbackIconS}';" />
+      }" class="w-6 h-6 object-contain mr-3 rounded" />
                           <span class="flex-grow text-sm text-gray-700 dark:text-gray-300">${
                             bookmark.name
                           }</span>
@@ -494,7 +494,9 @@ document.addEventListener("DOMContentLoaded", () => {
                           </button>
                           
                       </div>`;
-    } else {
+    }
+    // SE LAYOUT FOR GRID
+    else {
       containersWrapper.classList =
         "grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6";
       element.className =
@@ -506,8 +508,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         }">
                           <img src="${faviconUrl}" alt="Ícone de ${
         bookmark.name
-      }" class="w-8 h-8 object-contain mb-2 rounded-md shadow-sm" onerror="this.src='${fallbackIconM}';" />
-                          <span class="text-sm font-medium text-gray-700 dark:text-gray-300 text-center w-full px-1">${
+      }" class="w-7 h-7 object-contain mb-2 rounded-md shadow-sm"  />
+                          <span class="text-sm text-gray-700 dark:text-gray-300 text-center w-full px-1">${
                             bookmark.name
                           }</span>
                       </a>
