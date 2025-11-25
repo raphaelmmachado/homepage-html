@@ -89,7 +89,7 @@
         <button
           id="layout-toggle-btn"
           title="Alterar Layout"
-          class="hidden sm:block text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 p-3 rounded-full"
+          class="hidden sm:block text-gray-600 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 shadow-sm p-3 rounded-full"
         >
           <svg
             id="layout-icon-grid"
@@ -201,7 +201,7 @@
           </button>
           <div
             id="mobile-menu-dropdown"
-            class="hidden absolute right-0 mt-2 w-56 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
+            class="border border-gray-700 shadow-xl hidden absolute right-0 mt-2 w-56 origin-top-right bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20"
           >
             <div id="mobile-menu-items" class="py-1" role="menu">
               <!-- Itens do menu serão injetados aqui via JavaScript -->
@@ -211,8 +211,9 @@
         <button
           id="import-btn"
           title="Importar Favoritos"
-          class="hidden sm:block bg-gray-600 text-white p-3 rounded-full shadow-md hover:bg-gray-700 transition-colors"
+          class="hidden sm:block group text-gray-600 bg-white hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 p-3 shadow-sm rounded-full"
         >
+          <!-- 1. Ícone SVG (Visível Sempre) -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -224,6 +225,7 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
+            <!-- Ícone de Download/Importação -->
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
@@ -231,8 +233,8 @@
         </button>
         <button
           id="export-btn"
-          title="Salvar Favoritos"
-          class="hidden sm:block bg-blue-600 text-white p-3 rounded-full shadow-md hover:bg-blue-700 transition-colors"
+          title="Exportar Favoritos"
+          class="hidden sm:block group text-gray-600 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 p-3 shadow-sm rounded-full"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
