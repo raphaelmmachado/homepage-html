@@ -243,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const filteredBookmarks = bookmarks.filter(
         (b) =>
           b.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+          b.name.toLowerCase().includes(lowerCaseSearchTerm) ||
           (b.description &&
             b.description.toLowerCase().includes(lowerCaseSearchTerm))
       );
@@ -490,10 +491,10 @@ document.addEventListener("DOMContentLoaded", () => {
         bookmark.description || ""
       }">
                           <img src="${faviconUrl}" alt="${
-        bookmark.title
+        bookmark.title ?? bookmark.name
       }" class="w-6 h-6 object-contain mr-3 rounded" />
                           <span class="flex-grow text-sm text-gray-700 dark:text-gray-300">${
-                            bookmark.title
+                            bookmark.title ?? bookmark.name
                           }</span>
                       </a>
                       <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
@@ -516,10 +517,10 @@ document.addEventListener("DOMContentLoaded", () => {
                           bookmark.description || ""
                         }">
                           <img src="${faviconUrl}" alt="Ícone de ${
-        bookmark.title
+        bookmark.title ?? bookmark.name
       }" class="w-7 h-7 object-contain mb-2 rounded-md shadow-sm"  />
                           <span class="text-sm text-gray-700 dark:text-gray-300 text-center w-full px-1">${
-                            bookmark.title
+                            bookmark.title ?? bookmark.name
                           }</span>
                       </a>
                       <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
@@ -563,7 +564,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .addEventListener("click", () => {
         dialogTitle.textContent = "Editar Favorito";
         bookmarkIdInput.value = bookmark.id;
-        bookmarkNameInput.value = bookmark.name;
+        bookmarkNameInput.value = bookmark.name ?? bookmark.title;
         bookmarkDescriptionInput.value = bookmark.description || "";
         bookmarkUrlInput.value = bookmark.url;
         dialog.classList.remove("hidden");
@@ -841,10 +842,10 @@ document.addEventListener("DOMContentLoaded", () => {
   dialogForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const id = bookmarkIdInput.value;
-    const name = bookmarkNameInput.value.trim();
+    const title = bookmarkNameInput.value.trim();
     const description = bookmarkDescriptionInput.value.trim();
     const url = bookmarkUrlInput.value.trim();
-    if (name && url) {
+    if (title && url) {
       const cleanedUrl = url
         .replace(/^(?:https?:\/\/)?/i, "")
         .replace(/^www\./i, "");
@@ -852,14 +853,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (id) {
         const bookmark = bookmarks.find((b) => b.id === id);
         if (bookmark) {
-          bookmark.name = name;
+          bookmark.title = title;
           bookmark.description = description;
           bookmark.url = finalUrl;
         }
       } else {
         bookmarks.push({
           id: crypto.randomUUID(),
-          name,
+          title,
           description,
           url: finalUrl,
           containerId: activeContainerId,
