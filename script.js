@@ -1,3 +1,4 @@
+import searchEngines from "./config/searchEngines.js";
 document.addEventListener("DOMContentLoaded", () => {
   // --- ESTADO E CHAVES DO LOCALSTORAGE ---
   let containers = [];
