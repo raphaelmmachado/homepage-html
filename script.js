@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const deleteBookmarkBtn = document.getElementById("delete-bookmark-btn");
   const webSearchBar = document.getElementById("web-search-bar");
   const webSearchForm = document.getElementById("web-search-form");
+  const webSearchButton = document.getElementById("web-search-submit-btn");
   const engineSelectorBtn = document.getElementById("engine-selector-btn");
   const engineOptions = document.getElementById("engine-options");
   const importBtn = document.getElementById("import-btn");
@@ -240,13 +241,15 @@ document.addEventListener("DOMContentLoaded", () => {
       appDiv.classList.add("hidden");
       searchResultsWrapper.classList.remove("hidden");
       searchResultsWrapper.innerHTML = "";
-      const filteredBookmarks = bookmarks.filter(
-        (b) =>
-          b.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-          b.name.toLowerCase().includes(lowerCaseSearchTerm) ||
-          (b.description &&
-            b.description.toLowerCase().includes(lowerCaseSearchTerm))
-      );
+      const filteredBookmarks = bookmarks.filter(({ name, title }) => {
+        // acabei fazendo merda então tenho que checar se é title ou name
+        // use a array que tiver length maior que 0
+        return name
+          ? name.toLowerCase().includes(lowerCaseSearchTerm)
+          : title.toLowerCase().includes(lowerCaseSearchTerm) ||
+              (b.description &&
+                b.description.toLowerCase().includes(lowerCaseSearchTerm));
+      });
       const filteredArticles = articles.filter((a) =>
         a.title.toLowerCase().includes(lowerCaseSearchTerm)
       );
@@ -775,6 +778,17 @@ document.addEventListener("DOMContentLoaded", () => {
           window.open(`${engine_url}${fixed_query}`, "_self");
         }
       }
+    }
+  });
+  // ABRIR NOVA GUIA COM CLIQUE DO MEIO
+  webSearchButton.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    const query = webSearchBar.value.trim();
+    if (e.button == 1) {
+      const engine_url = searchEngines[activeSearchEngine].url;
+      const fixed_query = encodeURIComponent(query).replace(/%20/g, "+");
+
+      window.open(`${engine_url}${fixed_query}`, "_blank");
     }
   });
 
