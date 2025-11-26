@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const articlesSection = document.getElementById("articles-section");
   const articleForm = document.getElementById("article-form");
   const articleUrlInput = document.getElementById("article-url-input");
-
+  const navButtons = document.querySelectorAll("[data-class=nav-buttons]");
   // --- DEFINIÇÕES DE MECANISMOS DE BUSCA ---
   const searchEngines = {
     brave: {
@@ -173,6 +173,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch {
       return "Artigo";
     }
+  };
+  const extractFaviconFromURL = (url) => {
+    const favIcon = `https://www.google.com/s2/favicons?sz=64&domain_url=${url}`;
+    return favIcon;
   };
 
   const createArticleElement = (article) => {
@@ -317,7 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateSearchEngineUI = () => {
     engineSelectorBtn.innerHTML = searchEngines[activeSearchEngine].icon;
     localStorage.setItem(searchEngineStorageKey, activeSearchEngine);
-    webSearchBar.placeholder = `Pesquisar com ${searchEngines[activeSearchEngine].name} | ⬆️⬇️ para trocar mecanismo.`;
+    webSearchBar.placeholder = `${searchEngines[activeSearchEngine].placeholder}  ⬆️⬇️ para trocar mecanismo.`;
     if (searchEngines[activeSearchEngine].name === "Tradutor")
       webSearchBar.placeholder =
         "parametros: [Pesquisa] [idioma fonte (en)] [idioma destino (pt)]";
@@ -475,7 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const createBookmarkElement = (bookmark) => {
-    const faviconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${bookmark.url}`;
+    const faviconUrl = extractFaviconFromURL(bookmark.url);
 
     const element = document.createElement("div");
     element.setAttribute("draggable", "true");
@@ -639,6 +643,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     addContainerBox.appendChild(addTitle);
     return addContainerBox;
+  };
+
+  // REDERIZA OS BOTÕES - TEMA, LAYOUT, ETC
+  const renderNavButtons = () => {
+    navButtons.forEach((btn) => {
+      btn.classList.remove("invisible");
+    });
   };
 
   // --- MANIPULADORES DE EVENTOS ---
@@ -1031,9 +1042,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- INICIALIZAÇÃO ---
   loadData();
-  updateSearchEngineUI();
   applyLayout();
+  updateSearchEngineUI();
   applyTheme();
-  populateMobileMenu();
+  setTimeout(() => renderNavButtons(), 100);
+  setTimeout(() => {
+    populateMobileMenu();
+  }, 2000);
   webSearchBar.focus();
 });

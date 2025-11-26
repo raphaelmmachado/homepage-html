@@ -44,7 +44,8 @@
         <button
           id="theme-toggle-btn"
           title="Alterar Tema"
-          class="animate-pulse hidden sm:block text-amber-400 dark:text-gray-300 bg-amber-200 hover:bg-amber-300 dark:bg-gray-600 dark:hover:bg-gray-700 p-3 rounded-full"
+          data-class="nav-buttons"
+          class="animate-pulse hidden invisible sm:block text-amber-400 dark:text-gray-300 bg-amber-200 hover:bg-amber-300 dark:bg-gray-600 dark:hover:bg-gray-700 p-3 rounded-full"
         >
           <svg
             id="theme-icon-sun"
@@ -89,7 +90,8 @@
         <button
           id="layout-toggle-btn"
           title="Alterar Layout"
-          class="hidden sm:block text-gray-600 bg-white hover:bg-white/70 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 shadow-sm p-3 rounded-full"
+          data-class="nav-buttons"
+          class="hidden invisible sm:block text-gray-600 bg-white hover:bg-white/70 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 shadow-sm p-3 rounded-full"
         >
           <svg
             id="layout-icon-grid"
@@ -152,7 +154,6 @@
           <input
             type="search"
             id="web-search-bar"
-            placeholder="Pesquisar ou digitar URL... ⬆️⬇️ para trocar mecanismo, TAB para focar resultados"
             autocomplete="off"
             class="w-full bg-transparent pl-2 pr-12 py-2 text-gray-800 dark:text-gray-200 focus:outline-none"
           />
@@ -211,7 +212,8 @@
         <button
           id="import-btn"
           title="Importar Favoritos"
-          class="hidden sm:block group text-gray-600 bg-white hover:bg-white/70 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 p-3 shadow-sm rounded-full"
+          data-class="nav-buttons"
+          class="hidden invisible sm:block group text-gray-600 bg-white hover:bg-white/70 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 p-3 shadow-sm rounded-full"
         >
           <!-- 1. Ícone SVG (Visível Sempre) -->
           <svg
@@ -234,7 +236,8 @@
         <button
           id="export-btn"
           title="Exportar Favoritos"
-          class="hidden sm:block group text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 dark:hover:bg-gray-700 hover:bg-white/70 p-3 shadow-sm rounded-full"
+          data-class="nav-buttons"
+          class="hidden invisible sm:block group text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 dark:hover:bg-gray-700 hover:bg-white/70 p-3 shadow-sm rounded-full"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -265,7 +268,9 @@
     <div
       id="search-results-wrapper"
       class="container mx-auto p-4 md:px-8 max-w-lg flex-grow hidden"
-    ></div>
+    >
+      <!-- resultados serao exibidos aqui pelo script -->
+    </div>
 
     <section id="app" class="container mx-auto p-4 md:p-8 max-w-7xl flex-grow">
       <div id="containers-wrapper" class="flex gap-6 justify-start">
