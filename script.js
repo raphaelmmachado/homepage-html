@@ -61,44 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const articleForm = document.getElementById("article-form");
   const articleUrlInput = document.getElementById("article-url-input");
   const navButtons = document.querySelectorAll("[data-class=nav-buttons]");
-  // --- DEFINIÇÕES DE MECANISMOS DE BUSCA ---
-  const searchEngines = {
-    google: {
-      name: "Google",
-      url: "https://www.google.com/search?q=",
-      placeholder: "Pesquisar com Google.",
-    },
-    brave: {
-      name: "Brave",
-      url: "https://search.brave.com/search?q=",
-      placeholder: "Pesquisar com Brave.",
-    },
-    youtube: {
-      name: "YouTube",
-      url: "https://www.youtube.com/results?search_query=",
-      placeholder: "Buscar vídeo no YouTube.",
-    },
-    tradutor: {
-      name: "Tradutor",
-      url: "https://translate.google.com.br/?sl=auto&tl=pt&text=",
-      placeholder: "Traduzir texto.",
-    },
-    dicionario: {
-      name: "Dicionário",
-      url: "https://www.dicio.com.br/",
-      placeholder: "Buscar Palavra no Dicionário.",
-    },
-    grok_pedia: {
-      name: "Grokpedia",
-      url: "https://grokipedia.com/search?q=",
-      placeholder: "Buscar na Grokipedia. Alternativa à Wikipedia.",
-    },
-    duck_duck: {
-      name: "DuckDuckGo",
-      url: "https://duckduckgo.com/?q=",
-      placeholder: "Pesquisar com DuckDuckGo.",
-    },
-  };
 
   // --- FUNÇÕES DE LÓGICA ---
   const showModal = (
