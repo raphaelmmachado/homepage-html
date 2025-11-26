@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuItemsContainer = document.getElementById("mobile-menu-items");
   const appDiv = document.getElementById("app");
   const articlesWrapper = document.getElementById("articles-wrapper");
+  const articlesSection = document.getElementById("articles-section");
   const articleForm = document.getElementById("article-form");
   const articleUrlInput = document.getElementById("article-url-input");
 
@@ -228,15 +229,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderArticles = () => {
     articlesWrapper.innerHTML = "";
 
-    if (articles.length === 0) {
-      articlesWrapper.innerHTML = `
-        <div class="col-span-full text-center py-8">
-          <p class="text-gray-500 dark:text-gray-400">Nenhum artigo salvo ainda. Adicione URLs de artigos interessantes para ler depois!</p>
-        </div>
-      `;
-      return;
-    }
-
     articles.forEach((article) => {
       articlesWrapper.appendChild(createArticleElement(article));
     });
@@ -250,21 +242,35 @@ document.addEventListener("DOMContentLoaded", () => {
       searchResultsWrapper.innerHTML = "";
       const filteredBookmarks = bookmarks.filter(
         (b) =>
-          b.name.toLowerCase().includes(lowerCaseSearchTerm) ||
+          b.title.toLowerCase().includes(lowerCaseSearchTerm) ||
           (b.description &&
             b.description.toLowerCase().includes(lowerCaseSearchTerm))
       );
-      if (filteredBookmarks.length > 0) {
+      const filteredArticles = articles.filter((a) =>
+        a.title.toLowerCase().includes(lowerCaseSearchTerm)
+      );
+
+      if (filteredBookmarks.length > 0 || filteredArticles.length > 0) {
         const resultsContainer = document.createElement("div");
         resultsContainer.className =
           "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative transition-all w-full";
+
         const header = document.createElement("div");
         header.className = "flex justify-between items-center mb-4";
+        const tabKeyIcon = document.createElement("span");
+        tabKeyIcon.innerHTML = `<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <rect x="5" y="5" width="50" height="50" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/> <g fill="white"> <text x="10" y="20" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">TAB</text>
+    <rect x="18" y="28" width="3" height="15" rx="1.5" />
+    <rect x="23" y="33" width="18" height="3" rx="1.5" />   
+    <path d="M41 30L48 34.5L41 39V30Z" />
+  </g>
+</svg>`;
         const titleElement = document.createElement("h2");
         titleElement.className =
           "text-xl font-bold text-gray-800 dark:text-gray-200";
-        titleElement.textContent = `Resultados da Pesquisa`;
+        titleElement.textContent = `🔍 Sites encontrados`;
         header.appendChild(titleElement);
+        header.appendChild(tabKeyIcon);
         resultsContainer.appendChild(header);
         const resultsList = document.createElement("div");
         resultsList.className = "flex flex-col gap-1";
@@ -272,6 +278,9 @@ document.addEventListener("DOMContentLoaded", () => {
         currentLayout = "list";
         filteredBookmarks.forEach((bookmark) => {
           resultsList.appendChild(createBookmarkElement(bookmark));
+        });
+        filteredArticles.forEach((article) => {
+          resultsList.appendChild(createBookmarkElement(article));
         });
         currentLayout = originalLayout;
         resultsContainer.appendChild(resultsList);
@@ -304,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const updateSearchEngineUI = () => {
     engineSelectorBtn.innerHTML = searchEngines[activeSearchEngine].icon;
     localStorage.setItem(searchEngineStorageKey, activeSearchEngine);
-    webSearchBar.placeholder = `Pesquisar com ${searchEngines[activeSearchEngine].name} ou digite uma URL...`;
+    webSearchBar.placeholder = `Pesquisar com ${searchEngines[activeSearchEngine].name} | ⬆️⬇️ para trocar mecanismo.`;
     if (searchEngines[activeSearchEngine].name === "Tradutor")
       webSearchBar.placeholder =
         "parametros: [Pesquisa] [idioma fonte (en)] [idioma destino (pt)]";
@@ -481,10 +490,10 @@ document.addEventListener("DOMContentLoaded", () => {
         bookmark.description || ""
       }">
                           <img src="${faviconUrl}" alt="${
-        bookmark.name
+        bookmark.title
       }" class="w-6 h-6 object-contain mr-3 rounded" />
                           <span class="flex-grow text-sm text-gray-700 dark:text-gray-300">${
-                            bookmark.name
+                            bookmark.title
                           }</span>
                       </a>
                       <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
@@ -507,10 +516,10 @@ document.addEventListener("DOMContentLoaded", () => {
                           bookmark.description || ""
                         }">
                           <img src="${faviconUrl}" alt="Ícone de ${
-        bookmark.name
+        bookmark.title
       }" class="w-7 h-7 object-contain mb-2 rounded-md shadow-sm"  />
                           <span class="text-sm text-gray-700 dark:text-gray-300 text-center w-full px-1">${
-                            bookmark.name
+                            bookmark.title
                           }</span>
                       </a>
                       <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
@@ -645,7 +654,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   webSearchBar.addEventListener("keydown", (e) => {
     // FOCO NO PRIMEIRO RESULTADO AO TAB
-    if (e.key === "Tab" || e.key === "ArrowDown") {
+    if (e.key === "Tab") {
       setTimeout(() => {
         if (searchResultsWrapper.childElementCount > 0) {
           const firstResultLink = searchResultsWrapper.querySelector("a[href]");
@@ -663,6 +672,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     // SETA PARA CIMA ALTERA MECANISMO DE PESQUISA
     if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const engineKeys = Object.keys(searchEngines);
+      let currentIndex = engineKeys.indexOf(activeSearchEngine);
+
+      // adiciona engineKeys.length para evitar resultado negativo no modulo
+      // subtrai 1 para ir para o mecanismo anterior / adiciona para ir para o próximo
+      // usa modulo para circular entre os mecanismos
+      // ex: se currentIndex for 0, (0 - 1 + 5) % 5 = 4 (último índice)
+
+      currentIndex = (currentIndex - 1 + engineKeys.length) % engineKeys.length;
+      activeSearchEngine = engineKeys[currentIndex];
+      updateSearchEngineUI();
+    }
+    if (e.key === "ArrowDown") {
       e.preventDefault();
       const engineKeys = Object.keys(searchEngines);
       let currentIndex = engineKeys.indexOf(activeSearchEngine);

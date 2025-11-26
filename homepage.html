@@ -152,7 +152,7 @@
           <input
             type="search"
             id="web-search-bar"
-            placeholder="Pesquisar ou digitar URL..."
+            placeholder="Pesquisar ou digitar URL... ⬆️⬇️ para trocar mecanismo, TAB para focar resultados"
             autocomplete="off"
             class="w-full bg-transparent pl-2 pr-12 py-2 text-gray-800 dark:text-gray-200 focus:outline-none"
           />
@@ -267,42 +267,41 @@
       class="container mx-auto p-4 md:px-8 max-w-lg flex-grow hidden"
     ></div>
 
-    <div id="app" class="container mx-auto p-4 md:p-8 max-w-7xl flex-grow">
+    <section id="app" class="container mx-auto p-4 md:p-8 max-w-7xl flex-grow">
       <div id="containers-wrapper" class="flex gap-6 justify-start">
         <!-- As categorias e o botão de adicionar serão inseridos aqui -->
       </div>
-    </div>
-
-    <!-- Added articles wrapper section for read later feature -->
-    <div id="articles-section" class="container mx-auto p-4 md:p-8 max-w-7xl">
-      <!-- Added article input form at bottom of page -->
-      <div class="rounded-lg my-6">
-        <form id="article-form" class="flex gap-3">
-          <input
-            type="url"
-            data-role="change text"
-            id="article-url-input"
-            placeholder="Adicione artigos colando o URL do artigo aqui..."
-            required
-            class="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
-          />
-          <button
-            type="submit"
-            class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors font-medium"
+      <!-- Added articles wrapper section for read later feature -->
+      <div id="articles-section" class="">
+        <!-- Added article input form at bottom of page -->
+        <div class="rounded-lg my-6">
+          <form id="article-form" class="flex gap-3 flex-wrap">
+            <input
+              type="url"
+              data-role="change text"
+              id="article-url-input"
+              placeholder="Adicione artigos colando o URL do artigo aqui..."
+              required
+              class="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 dark:text-gray-200"
+            />
+            <button
+              type="submit"
+              class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors font-medium"
+            >
+              Salvar Artigo
+            </button>
+          </form>
+        </div>
+        <div class="">
+          <div
+            id="articles-wrapper"
+            class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6"
           >
-            Salvar Artigo
-          </button>
-        </form>
-      </div>
-      <div class="">
-        <div
-          id="articles-wrapper"
-          class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6"
-        >
-          <!-- Articles will be inserted here -->
+            <!-- Articles will be inserted here -->
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Modal para adicionar/editar favorito -->
     <div
