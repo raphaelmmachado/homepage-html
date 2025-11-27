@@ -143,10 +143,23 @@ const renderArticles = () => {
     articlesWrapper.appendChild(createArticleElement(article));
   });
 };
-const createSearchResultsElement = (searchTerm = "") => {
+const createSearchResultsElement = (
+  searchTerm = "",
+  option = { url: "", icon: "", placeholder: "" }
+) => {
   const seachEnginesSuggestions = document.createElement("a");
   seachEnginesSuggestions.href = `${option.url}${searchTerm}`;
-  seachEnginesSuggestions.className = "flex items-center gap-3";
+  const span = `<span class="italic font-bold">${searchTerm}</span>`;
+  seachEnginesSuggestions.className = `flex items-center gap-3 my-3 p-1
+           rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`;
+  seachEnginesSuggestions.dataset.id = "search-option";
+  seachEnginesSuggestions.innerHTML = `
+        <span class="max-w-full h-auto">${option.icon}</span>
+        <span class="text-gray-700 dark:text-gray-200 truncate">
+            ${option.placeholder.replace("{palavra}", span)}
+        </span>
+        `;
+  return seachEnginesSuggestions;
 };
 export const render = (searchTerm = "") => {
   const lowerCaseSearchTerm = searchTerm.toLowerCase();
@@ -213,17 +226,10 @@ export const render = (searchTerm = "") => {
       titleElement.textContent = `💭 Você quer`;
 
       searchOptions.forEach((option) => {
-        searchTerm.trim();
-        const seachEnginesSuggestions = document.createElement("a");
-        seachEnginesSuggestions.href = `${option.url}${searchTerm}`;
-        seachEnginesSuggestions.className = `flex  items-center gap-3 my-4 p-3
-           rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`;
-        seachEnginesSuggestions.dataset.id = "search-option";
-        seachEnginesSuggestions.innerHTML = `
-        <span class="max-w-full h-auto">${option.icon}</span>
-        <span class="text-gray-800 dark:text-gray-200 truncate">
-        ${option.placeholder.replace("{palavra}", searchTerm)}</span>
-        `;
+        const seachEnginesSuggestions = createSearchResultsElement(
+          searchTerm,
+          option
+        );
 
         resultsContainer.appendChild(seachEnginesSuggestions);
       });
@@ -497,7 +503,7 @@ const createAddCategoryBox = () => {
     "cursor-pointer bg-white/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600 px-8 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex items-center justify-center min-h-[148px]";
   const addTitle = document.createElement("h2");
   addTitle.className = "text-xl font-bold text-gray-400 text-center";
-  addTitle.textContent = "📁 + Criar Pasta";
+  addTitle.textContent = "+ Criar Pasta";
   addContainerBox.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "text";
@@ -536,7 +542,7 @@ export const renderNavButtons = () => {
 export const updateSearchEngineUI = () => {
   engineSelectorBtn.innerHTML = searchEngines[activeSearchEngine].icon;
   localStorage.setItem("my-homepage-search-engine", activeSearchEngine);
-  webSearchBar.placeholder = `${searchEngines[activeSearchEngine].placeholder}  ⬆️⬇️ para trocar mecanismo.`;
+  webSearchBar.placeholder = `${searchEngines[activeSearchEngine].placeholder}`;
   if (searchEngines[activeSearchEngine].name === "Tradutor")
     webSearchBar.placeholder =
       "parametros: [Pesquisa] [idioma fonte (en)] [idioma destino (pt)]";
