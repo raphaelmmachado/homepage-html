@@ -1,0 +1,604 @@
+import searchEngines from "./config/searchEngines.js";
+import {
+  containers,
+  bookmarks,
+  articles,
+  activeContainerId,
+  draggedContainerId,
+  draggedBookmarkId,
+  activeSearchEngine,
+  currentLayout,
+  currentTheme,
+  setContainers,
+  setBookmarks,
+  setArticles,
+  setActiveContainerId,
+  setDraggedContainerId,
+  setDraggedBookmarkId,
+  setActiveSearchEngine,
+  setCurrentLayout,
+  setCurrentTheme,
+} from "./state.js";
+import {
+  containersWrapper,
+  dialog,
+  dialogTitle,
+  dialogForm,
+  bookmarkIdInput,
+  bookmarkNameInput,
+  bookmarkDescriptionInput,
+  bookmarkUrlInput,
+  cancelBtn,
+  deleteBookmarkBtn,
+  webSearchBar,
+  webSearchForm,
+  webSearchButton,
+  engineSelectorBtn,
+  engineOptions,
+  importBtn,
+  exportBtn,
+  importFileInput,
+  layoutToggleBtn,
+  gridIcon,
+  listIcon,
+  alertDialog,
+  alertDialogTitle,
+  alertDialogMessage,
+  alertDialogButtons,
+  themeToggleBtn,
+  sunIcon,
+  moonIcon,
+  searchResultsWrapper,
+  mobileMenuBtn,
+  mobileMenuDropdown,
+  mobileMenuItemsContainer,
+  appDiv,
+  articlesWrapper,
+  articlesSection,
+  articleForm,
+  articleUrlInput,
+  navButtons,
+} from "./utils/dom.js";
+import { extractTitleFromUrl, extractFaviconFromURL } from "./utils/helpers.js";
+import { saveData, loadData } from "./services/storage.js";
+
+// --- FUNÇÕES DE LÓGICA ---
+export const showModal = (
+  message,
+  title = "Atenção",
+  buttons = [{ text: "OK", class: "primary" }]
+) => {
+  return new Promise((resolve) => {
+    alertDialogTitle.textContent = title;
+    alertDialogMessage.textContent = message;
+    alertDialogButtons.innerHTML = "";
+    buttons.forEach((btnInfo) => {
+      const button = document.createElement("button");
+      button.textContent = btnInfo.text;
+      const baseClass = "font-semibold py-2 px-6 rounded-lg transition-colors";
+      if (btnInfo.class === "danger") {
+        button.className = `${baseClass} bg-red-600 text-white hover:bg-red-700`;
+      } else if (btnInfo.class === "secondary") {
+        button.className = `${baseClass} bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500`;
+      } else {
+        button.className = `${baseClass} bg-blue-600 text-white hover:bg-blue-700`;
+      }
+      button.addEventListener("click", () => {
+        alertDialog.classList.add("hidden");
+        resolve(btnInfo.value);
+      });
+      alertDialogButtons.appendChild(button);
+    });
+    alertDialog.classList.remove("hidden");
+  });
+};
+
+const createArticleElement = (article) => {
+  const element = document.createElement("div");
+  element.className =
+    "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow group relative";
+  // adicionar target="_blank" ao element <a> para abrir em nova guia
+  element.innerHTML = `
+      <div class="flex flex-col h-full">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 line-clamp-2">${
+          article.title
+        }</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 flex-grow">${
+          article.description
+        }</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-500 dark:text-gray-500">${new Date(
+            article.dateAdded
+          ).toLocaleDateString("pt-BR")}
+          </span>
+          <div class="flex gap-2">
+            <a href="${article.url}"  rel="noopener noreferrer" 
+               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
+              Ler
+            </a>
+            <button class="remove-article-btn text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+              Remover
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+  // Add remove functionality
+  element
+    .querySelector(".remove-article-btn")
+    .addEventListener("click", async () => {
+      const confirmed = await showModal(
+        `Tem certeza que deseja remover este artigo?`,
+        "Confirmar Remoção",
+        [
+          { text: "Cancelar", class: "secondary", value: false },
+          { text: "Remover", class: "danger", value: true },
+        ]
+      );
+      if (confirmed) {
+        setArticles(articles.filter((a) => a.id !== article.id));
+        saveData();
+        renderArticles();
+      }
+    });
+
+  return element;
+};
+
+const renderArticles = () => {
+  articlesWrapper.innerHTML = "";
+
+  articles.forEach((article) => {
+    articlesWrapper.appendChild(createArticleElement(article));
+  });
+};
+
+export const render = (searchTerm = "") => {
+  const lowerCaseSearchTerm = searchTerm.toLowerCase();
+  if (lowerCaseSearchTerm) {
+    appDiv.classList.add("hidden");
+    searchResultsWrapper.classList.remove("hidden");
+    searchResultsWrapper.innerHTML = "";
+    const filteredBookmarks = bookmarks.filter(
+      ({ name, title, description }) => {
+        const lowerCaseName = name ? name.toLowerCase() : "";
+        const lowerCaseTitle = title ? title.toLowerCase() : "";
+        const lowerCaseDescription = description
+          ? description.toLowerCase()
+          : "";
+
+        return (
+          lowerCaseName.includes(lowerCaseSearchTerm) ||
+          lowerCaseTitle.includes(lowerCaseSearchTerm) ||
+          lowerCaseDescription.includes(lowerCaseSearchTerm)
+        );
+      }
+    );
+    const filteredArticles = articles.filter((a) =>
+      a.title.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+
+    if (filteredBookmarks.length > 0 || filteredArticles.length > 0) {
+      const resultsContainer = document.createElement("div");
+      resultsContainer.className =
+        "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative transition-all w-full";
+
+      const header = document.createElement("div");
+      header.className = "flex justify-between items-center mb-4";
+      const tabKeyIcon = document.createElement("span");
+      tabKeyIcon.innerHTML = `<svg width="45" height="45" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="50" height="50" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/> <g fill="white"> <text x="10" y="20" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">TAB</text>
+  <rect x="18" y="28" width="3" height="15" rx="1.5" />
+  <rect x="23" y="33" width="18" height="3" rx="1.5" />   
+  <path d="M41 30L48 34.5L41 39V30Z" />
+</g>
+</svg>`;
+      const titleElement = document.createElement("h2");
+      titleElement.className =
+        "text-xl font-bold text-gray-800 dark:text-gray-200";
+      titleElement.textContent = `🔍 Sites encontrados`;
+      header.appendChild(titleElement);
+      header.appendChild(tabKeyIcon);
+      resultsContainer.appendChild(header);
+      const resultsList = document.createElement("div");
+      resultsList.className = "flex flex-col gap-1";
+      const originalLayout = currentLayout;
+      setCurrentLayout("list");
+      filteredBookmarks.forEach((bookmark) => {
+        resultsList.appendChild(createBookmarkElement(bookmark));
+      });
+      filteredArticles.forEach((article) => {
+        resultsList.appendChild(createBookmarkElement(article));
+      });
+      setCurrentLayout(originalLayout);
+      resultsContainer.appendChild(resultsList);
+      searchResultsWrapper.appendChild(resultsContainer);
+    } else {
+      searchResultsWrapper.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Nenhum favorito encontrado para "${searchTerm}"</p>`;
+    }
+  } else {
+    appDiv.classList.remove("hidden");
+    searchResultsWrapper.classList.add("hidden");
+    searchResultsWrapper.innerHTML = "";
+    containersWrapper.innerHTML = "";
+    containers.forEach((container) => {
+      const containerBookmarks = bookmarks.filter(
+        (b) => b.containerId === container.id
+      );
+      containersWrapper.appendChild(
+        createContainerElement(container, containerBookmarks)
+      );
+    });
+    if (containersWrapper.innerHTML !== "" || containers.length === 0) {
+      containersWrapper.appendChild(createAddCategoryBox());
+    }
+  }
+  renderArticles(); // Always render articles when updating the page
+};
+
+const createContainerElement = (container, containerBookmarks) => {
+  const element = document.createElement("div");
+  element.className = `bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative group/category transition-all`;
+  element.setAttribute("draggable", "true");
+
+  element.dataset.id = container.id;
+  element.addEventListener("dragstart", (e) => {
+    setDraggedContainerId(container.id);
+    setTimeout(() => e.target.classList.add("dragging"), 0);
+  });
+  element.addEventListener("dragend", (e) =>
+    e.target.classList.remove("dragging")
+  );
+  element.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.target.closest(".group/category").classList.add("drag-over");
+  });
+  element.addEventListener("dragleave", (e) =>
+    e.target.closest(".group/category").classList.remove("drag-over")
+  );
+  element.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const targetContainer = e.target.closest(".group/category");
+    targetContainer.classList.remove("drag-over");
+    if (draggedBookmarkId) {
+      const bookmark = bookmarks.find((b) => b.id === draggedBookmarkId);
+      if (bookmark) {
+        bookmark.containerId = container.id;
+        saveData();
+        render(webSearchBar.value);
+      }
+    } else if (draggedContainerId && draggedContainerId !== container.id) {
+      const draggedIndex = containers.findIndex(
+        (c) => c.id === draggedContainerId
+      );
+      const targetIndex = containers.findIndex((c) => c.id === container.id);
+      const [draggedItem] = containers.splice(draggedIndex, 1);
+      containers.splice(targetIndex, 0, draggedItem);
+      saveData();
+      render(webSearchBar.value);
+    }
+    setDraggedBookmarkId(null);
+    setDraggedContainerId(null);
+  });
+  const header = document.createElement("div");
+  header.className = "flex justify-between items-center mb-4";
+  const titleElement = document.createElement("h2");
+  titleElement.className =
+    "text-xl font-bold text-gray-800 dark:text-gray-200 cursor-pointer flex-grow";
+  titleElement.textContent = container.title;
+  titleElement.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.dataset.role = "change text";
+    input.value = container.title;
+    input.className =
+      "text-xl font-bold text-gray-800 dark:text-gray-200 title-input";
+    const saveEdit = () => {
+      const newTitle = input.value.trim();
+      if (newTitle) container.title = newTitle;
+      saveData();
+      render(webSearchBar.value);
+    };
+    input.addEventListener("blur", saveEdit);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") input.blur();
+      if (e.key === "Escape") render(webSearchBar.value);
+    });
+    titleElement.replaceWith(input);
+    input.focus();
+    input.select();
+  });
+  const removeContainerBtn = document.createElement("button");
+  removeContainerBtn.className =
+    "absolute top-3 right-3 w-7 h-7 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center text-lg opacity-0 group-hover/category:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white";
+  removeContainerBtn.innerHTML = "&times;";
+  removeContainerBtn.ariaLabel = `Remover pasta ${container.title}`;
+  removeContainerBtn.addEventListener("click", async () => {
+    const confirmed = await showModal(
+      `Tem certeza que deseja remover a pasta "${container.title}" e todos os seus favoritos?`,
+      "Confirmar Exclusão",
+      [
+        { text: "Cancelar", class: "secondary", value: false },
+        { text: "Remover", class: "danger", value: true },
+      ]
+    );
+    if (confirmed) {
+      setContainers(containers.filter((c) => c.id !== container.id));
+      setBookmarks(bookmarks.filter((b) => b.containerId !== container.id));
+      saveData();
+      render(webSearchBar.value);
+    }
+  });
+  header.appendChild(titleElement);
+
+  element.appendChild(removeContainerBtn);
+
+  const grid = document.createElement("div");
+  grid.dataset.id = "container";
+  grid.className =
+    currentLayout === "grid" ? "flex flex-wrap gap-2" : "flex flex-col gap-1";
+  containerBookmarks.forEach((bookmark) =>
+    grid.appendChild(createBookmarkElement(bookmark))
+  );
+  const addBookmarkBox = createAddBookmarkBox(
+    container.id,
+    containerBookmarks.length > 0
+  );
+  grid.appendChild(addBookmarkBox);
+  element.appendChild(header);
+  element.appendChild(grid);
+  return element;
+};
+
+const createBookmarkElement = (bookmark) => {
+  const faviconUrl = extractFaviconFromURL(bookmark.url);
+
+  const element = document.createElement("div");
+  element.setAttribute("draggable", "true");
+  element.dataset.id = bookmark.id;
+  // SE LAYOUT FOR LISTA
+  if (currentLayout === "list") {
+    containersWrapper.classList =
+      "grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6";
+    element.className =
+      "relative flex items-center group/item p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50";
+    // adicionar target="_blank" ao element <a> para abrir em nova guia
+    element.innerHTML = `
+                    <a href="${
+                      bookmark.url
+                    }" rel="noopener noreferrer" class="flex items-center flex-grow" title="${
+      bookmark.description || ""
+    }">
+                        <img src="${faviconUrl}" alt="${
+      bookmark.title ?? bookmark.name
+    }" class="w-6 h-6 object-contain mr-3 rounded" />
+                        <span class="flex-grow text-sm text-gray-700 dark:text-gray-300">${
+                          bookmark.title ?? bookmark.name
+                        }</span>
+                    </a>
+                    <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
+                        <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+
+                        </button>
+                        
+                    </div>`;
+  }
+  // SE LAYOUT FOR GRID
+  else {
+    containersWrapper.classList =
+      "grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6";
+    element.className =
+      "relative flex flex-col items-center group/item w-20 rounded-lg  hover:bg-gray-200 dark:hover:bg-gray-700/50 transition-colors duration-200";
+    element.innerHTML = `
+                    <a href="${bookmark.url}" rel="noopener noreferrer"
+                      class="flex flex-col items-center p-2" title="${
+                        bookmark.description || ""
+                      }">
+                        <img src="${faviconUrl}" alt="Ícone de ${
+      bookmark.title ?? bookmark.name
+    }" class="w-7 h-7 object-contain mb-2 rounded-md shadow-sm"  />
+                        <span class="text-sm text-gray-700 dark:text-gray-300 text-center w-full px-1">${
+                          bookmark.title ?? bookmark.name
+                        }</span>
+                    </a>
+                    <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                    </button>
+                    `;
+  }
+  element.addEventListener("dragstart", (e) => {
+    e.stopPropagation();
+    setDraggedBookmarkId(bookmark.id);
+    setTimeout(() => element.classList.add("dragging"), 0);
+  });
+  element.addEventListener("dragend", () =>
+    element.classList.remove("dragging")
+  );
+  element.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    element.classList.add("drag-over-bookmark");
+  });
+  element.addEventListener("dragleave", () =>
+    element.classList.remove("drag-over-bookmark")
+  );
+  element.addEventListener("drop", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    element.classList.remove("drag-over-bookmark");
+    if (!draggedBookmarkId || draggedBookmarkId === bookmark.id) return;
+    const draggedIndex = bookmarks.findIndex((b) => b.id === draggedBookmarkId);
+    const targetIndex = bookmarks.findIndex((b) => b.id === bookmark.id);
+    const [draggedItem] = bookmarks.splice(draggedIndex, 1);
+    bookmarks.splice(targetIndex, 0, draggedItem);
+    draggedItem.containerId = bookmark.containerId;
+    saveData();
+    render(webSearchBar.value);
+  });
+  element.querySelector(".edit-bookmark-btn").addEventListener("click", () => {
+    dialogTitle.textContent = "Editar Favorito";
+    bookmarkIdInput.value = bookmark.id;
+    bookmarkNameInput.value = bookmark.name ?? bookmark.title;
+    bookmarkDescriptionInput.value = bookmark.description || "";
+    bookmarkUrlInput.value = bookmark.url;
+    dialog.classList.remove("hidden");
+    deleteBookmarkBtn.classList.remove("hidden");
+  });
+  return element;
+};
+
+const createAddBookmarkBox = (containerId, hasBookmarks) => {
+  const addBookmarkBox = document.createElement("div");
+  addBookmarkBox.className = "add-bookmark-trigger";
+
+  addBookmarkBox.className = `flex p-2 items-center rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer text-gray-500 transition-opacity duration-300
+  ${currentLayout === "list" ? "" : "flex-col justify-center"}
+  ${hasBookmarks ? "opacity-0 group-hover/category:opacity-100" : ""}`;
+
+  if (currentLayout === "list") {
+    addBookmarkBox.innerHTML = `
+                    <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span class="text-sm">Adicionar</span>`;
+  } else {
+    addBookmarkBox.innerHTML = `
+                    <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <span class="mt-2 text-sm">Adicionar</span>`;
+  }
+  addBookmarkBox.addEventListener("click", () => {
+    dialogTitle.textContent = "Adicionar novo site favorito";
+    dialogForm.reset();
+    bookmarkIdInput.value = "";
+    setActiveContainerId(containerId);
+    dialog.classList.remove("hidden");
+    deleteBookmarkBtn.classList.add("hidden");
+  });
+  return addBookmarkBox;
+};
+
+const createAddCategoryBox = () => {
+  const addContainerBox = document.createElement("div");
+  addContainerBox.className =
+    "cursor-pointer bg-white/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600 px-8 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex items-center justify-center min-h-[148px]";
+  const addTitle = document.createElement("h2");
+  addTitle.className = "text-xl font-bold text-gray-400 text-center";
+  addTitle.textContent = "+ Adicionar Pasta";
+  addContainerBox.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Nome da Pasta";
+    input.dataset.role = "change text";
+    input.className =
+      "text-xl font-bold text-gray-800 dark:text-gray-200 title-input text-center";
+    const saveNew = () => {
+      const title = input.value.trim();
+      if (title) {
+        containers.push({ id: crypto.randomUUID(), title });
+        saveData();
+      }
+      render();
+    };
+    input.addEventListener("blur", saveNew);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") input.blur();
+      if (e.key === "Escape") render();
+    });
+    addContainerBox.innerHTML = "";
+    addContainerBox.appendChild(input);
+    input.focus();
+  });
+  addContainerBox.appendChild(addTitle);
+  return addContainerBox;
+};
+
+// REDERIZA OS BOTÕES - TEMA, LAYOUT, ETC
+export const renderNavButtons = () => {
+  navButtons.forEach((btn) => {
+    btn.classList.remove("invisible");
+  });
+};
+
+export const updateSearchEngineUI = () => {
+  engineSelectorBtn.innerHTML = searchEngines[activeSearchEngine].icon;
+  localStorage.setItem("my-homepage-search-engine", activeSearchEngine);
+  webSearchBar.placeholder = `${searchEngines[activeSearchEngine].placeholder}  ⬆️⬇️ para trocar mecanismo.`;
+  if (searchEngines[activeSearchEngine].name === "Tradutor")
+    webSearchBar.placeholder =
+      "parametros: [Pesquisa] [idioma fonte (en)] [idioma destino (pt)]";
+};
+
+export const applyLayout = () => {
+  if (currentLayout === "grid") {
+    gridIcon.classList.add("hidden");
+    listIcon.classList.remove("hidden");
+  } else {
+    gridIcon.classList.remove("hidden");
+    listIcon.classList.add("hidden");
+  }
+  render(webSearchBar.value);
+};
+
+export const toggleLayout = () => {
+  setCurrentLayout(currentLayout === "grid" ? "list" : "grid");
+  localStorage.setItem("my-homepage-layout", currentLayout);
+  applyLayout();
+};
+
+export const applyTheme = () => {
+  if (currentTheme === "dark") {
+    document.documentElement.classList.add("dark");
+    sunIcon.classList.add("hidden");
+    moonIcon.classList.remove("hidden");
+  } else {
+    document.documentElement.classList.remove("dark");
+    sunIcon.classList.remove("hidden");
+    moonIcon.classList.add("hidden");
+  }
+};
+
+export const toggleTheme = () => {
+  setCurrentTheme(currentTheme === "light" ? "dark" : "light");
+  localStorage.setItem("my-homepage-theme", currentTheme);
+  applyTheme();
+};
+
+export const populateMobileMenu = () => {
+  const createMenuItem = (text, iconSvg, clickHandler) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
+    item.innerHTML = `<div class="w-6 h-6 flex items-center justify-center">${iconSvg}</div><span>${text}</span>`;
+    item.addEventListener("click", () => {
+      clickHandler();
+      mobileMenuDropdown.classList.add("hidden");
+    });
+    return item;
+  };
+
+  const themeIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`;
+  const layoutIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>`;
+
+  const menuItems = [
+    { text: "Alterar Tema", handler: toggleTheme, icon: themeIconSvg },
+    { text: "Alterar Layout", handler: toggleLayout, icon: layoutIconSvg },
+    {
+      text: "Importar Favoritos",
+      handler: () => importBtn.click(),
+      icon: importBtn.innerHTML,
+    },
+    {
+      text: "Salvar Favoritos",
+      handler: () => exportBtn.click(),
+      icon: exportBtn.innerHTML,
+    },
+  ];
+
+  mobileMenuItemsContainer.innerHTML = "";
+  menuItems.forEach((itemInfo) => {
+    const item = createMenuItem(itemInfo.text, itemInfo.icon, itemInfo.handler);
+    mobileMenuItemsContainer.appendChild(item);
+  });
+};
