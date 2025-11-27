@@ -9,7 +9,7 @@ import {
 } from "../utils/dom.js";
 import { render, updateSearchEngineUI } from "../app.js";
 import { activeSearchEngine, setActiveSearchEngine } from "../state.js";
-import searchEngines from "../config/searchEngines.js";
+import { searchEngines } from "../config/searchEngines.js";
 
 export function initSearchEventListeners() {
   document.addEventListener("keydown", (event) => {
@@ -105,7 +105,7 @@ export function initSearchEventListeners() {
       render();
     }
   });
-
+  // SUBMETER PESQUISA
   webSearchForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const query = webSearchBar.value.trim();
@@ -150,7 +150,7 @@ export function initSearchEventListeners() {
       }
     }
   });
-  // ABRIR NOVA GUIA COM CLIQUE DO MEIO
+  // ABRIR NOVA GUIA COM CLIQUE DO MEIO NA LUPA
   webSearchButton.addEventListener("mousedown", (e) => {
     e.preventDefault();
     const query = webSearchBar.value.trim();
@@ -161,11 +161,11 @@ export function initSearchEventListeners() {
       window.open(`${engine_url}${fixed_query}`, "_blank");
     }
   });
-
+  // TOGGLE OPÇÕES DE MECANISMO DE PESQUISA
   engineSelectorBtn.addEventListener("click", () =>
     engineOptions.classList.toggle("hidden")
   );
-
+  // FECHAR OPÇÕES DE MECANISMO DE PESQUISA AO CLICAR FORA
   document.addEventListener("click", (e) => {
     if (
       !engineSelectorBtn.contains(e.target) &&
@@ -174,7 +174,7 @@ export function initSearchEventListeners() {
       engineOptions.classList.add("hidden");
     }
   });
-
+  // POPULAR OPÇÕES DE MECANISMOS DE PESQUISA
   Object.keys(searchEngines).forEach((key) => {
     const option = document.createElement("button");
     option.type = "button";

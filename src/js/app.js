@@ -1,4 +1,4 @@
-import searchEngines from "./config/searchEngines.js";
+import { searchEngines, searchOptions } from "./config/searchEngines.js";
 import {
   containers,
   bookmarks,
@@ -28,39 +28,29 @@ import {
   bookmarkNameInput,
   bookmarkDescriptionInput,
   bookmarkUrlInput,
-  cancelBtn,
   deleteBookmarkBtn,
   webSearchBar,
-  webSearchForm,
-  webSearchButton,
   engineSelectorBtn,
-  engineOptions,
   importBtn,
   exportBtn,
-  importFileInput,
-  layoutToggleBtn,
   gridIcon,
   listIcon,
   alertDialog,
   alertDialogTitle,
   alertDialogMessage,
   alertDialogButtons,
-  themeToggleBtn,
   sunIcon,
   moonIcon,
   searchResultsWrapper,
-  mobileMenuBtn,
   mobileMenuDropdown,
   mobileMenuItemsContainer,
   appDiv,
   articlesWrapper,
-  articlesSection,
-  articleForm,
-  articleUrlInput,
   navButtons,
 } from "./utils/dom.js";
-import { extractTitleFromUrl, extractFaviconFromURL } from "./utils/helpers.js";
-import { saveData, loadData } from "./services/storage.js";
+import { extractFaviconFromURL } from "./utils/helpers.js";
+import { saveData } from "./services/storage.js";
+import { tabKeySVG, youtubeSVG } from "./svgs/index.js";
 
 // --- FUNÇÕES DE LÓGICA ---
 export const showModal = (
@@ -153,7 +143,11 @@ const renderArticles = () => {
     articlesWrapper.appendChild(createArticleElement(article));
   });
 };
-
+const createSearchResultsElement = (searchTerm = "") => {
+  const seachEnginesSuggestions = document.createElement("a");
+  seachEnginesSuggestions.href = `${option.url}${searchTerm}`;
+  seachEnginesSuggestions.className = "flex items-center gap-3";
+};
 export const render = (searchTerm = "") => {
   const lowerCaseSearchTerm = searchTerm.toLowerCase();
   if (lowerCaseSearchTerm) {
@@ -179,32 +173,27 @@ export const render = (searchTerm = "") => {
       a.title.toLowerCase().includes(lowerCaseSearchTerm)
     );
 
+    // CRIAR ELEMENTO DE RESULTADOS
+    const resultsContainer = document.createElement("div");
+    resultsContainer.className =
+      "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative transition-all w-full";
+    const header = document.createElement("div");
+    header.className = "flex justify-between items-center mb-4";
+    const tabKeyIcon = document.createElement("span");
+    tabKeyIcon.innerHTML = tabKeySVG;
+    const titleElement = document.createElement("h2");
+    titleElement.className =
+      "text-xl font-bold text-gray-600 dark:text-gray-400";
+    titleElement.textContent = `🔍 Sites encontrados`;
+    header.appendChild(titleElement);
+    header.appendChild(tabKeyIcon);
+    resultsContainer.appendChild(header);
+    const resultsList = document.createElement("div");
+    resultsList.className = "flex flex-col gap-1";
+    const originalLayout = currentLayout;
+    setCurrentLayout("list");
+    // SE ENCONTRAR RESULTADOS - SITES FAVORITOS OU ARTIGOS
     if (filteredBookmarks.length > 0 || filteredArticles.length > 0) {
-      const resultsContainer = document.createElement("div");
-      resultsContainer.className =
-        "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md relative transition-all w-full";
-
-      const header = document.createElement("div");
-      header.className = "flex justify-between items-center mb-4";
-      const tabKeyIcon = document.createElement("span");
-      tabKeyIcon.innerHTML = `<svg width="45" height="45" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="5" y="5" width="50" height="50" rx="8" fill="#1E293B" stroke="#475569" stroke-width="2"/> <g fill="white"> <text x="10" y="20" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">TAB</text>
-  <rect x="18" y="28" width="3" height="15" rx="1.5" />
-  <rect x="23" y="33" width="18" height="3" rx="1.5" />   
-  <path d="M41 30L48 34.5L41 39V30Z" />
-</g>
-</svg>`;
-      const titleElement = document.createElement("h2");
-      titleElement.className =
-        "text-xl font-bold text-gray-800 dark:text-gray-200";
-      titleElement.textContent = `🔍 Sites encontrados`;
-      header.appendChild(titleElement);
-      header.appendChild(tabKeyIcon);
-      resultsContainer.appendChild(header);
-      const resultsList = document.createElement("div");
-      resultsList.className = "flex flex-col gap-1";
-      const originalLayout = currentLayout;
-      setCurrentLayout("list");
       filteredBookmarks.forEach((bookmark) => {
         resultsList.appendChild(createBookmarkElement(bookmark));
       });
@@ -214,8 +203,31 @@ export const render = (searchTerm = "") => {
       setCurrentLayout(originalLayout);
       resultsContainer.appendChild(resultsList);
       searchResultsWrapper.appendChild(resultsContainer);
-    } else {
-      searchResultsWrapper.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Nenhum favorito encontrado para "${searchTerm}"</p>`;
+    }
+    // SE NÃO ENCONTRAR RESULTADOS, SUGERIR OUTRAS PESQUISAS
+    else {
+      const notFoundMessage = document.createElement("p");
+      notFoundMessage.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Nenhum favorito encontrado.</p>`;
+      searchResultsWrapper.appendChild(notFoundMessage);
+
+      titleElement.textContent = `💭 Você quer`;
+
+      searchOptions.forEach((option) => {
+        searchTerm.trim();
+        const seachEnginesSuggestions = document.createElement("a");
+        seachEnginesSuggestions.href = `${option.url}${searchTerm}`;
+        seachEnginesSuggestions.className = `flex  items-center gap-3 my-4 p-3
+           rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`;
+        seachEnginesSuggestions.dataset.id = "search-option";
+        seachEnginesSuggestions.innerHTML = `
+        <span class="max-w-full h-auto">${option.icon}</span>
+        <span class="text-gray-800 dark:text-gray-200 truncate">
+        ${option.placeholder.replace("{palavra}", searchTerm)}</span>
+        `;
+
+        resultsContainer.appendChild(seachEnginesSuggestions);
+      });
+      searchResultsWrapper.appendChild(resultsContainer);
     }
   } else {
     appDiv.classList.remove("hidden");
@@ -485,7 +497,7 @@ const createAddCategoryBox = () => {
     "cursor-pointer bg-white/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600 px-8 rounded-lg hover:bg-white dark:hover:bg-gray-800 transition-colors flex items-center justify-center min-h-[148px]";
   const addTitle = document.createElement("h2");
   addTitle.className = "text-xl font-bold text-gray-400 text-center";
-  addTitle.textContent = "+ Adicionar Pasta";
+  addTitle.textContent = "📁 + Criar Pasta";
   addContainerBox.addEventListener("click", () => {
     const input = document.createElement("input");
     input.type = "text";
