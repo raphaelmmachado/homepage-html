@@ -28,9 +28,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        href="https.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+        type="text/css"
+      />
+    </noscript>
     <script src="src/js/main.js" type="module" defer></script>
   </head>
 
@@ -43,6 +52,7 @@
       <div class="mx-auto flex justify-center gap-4 px-4">
         <button
           id="theme-toggle-btn"
+          aria-label="theme-toggle"
           title="Alterar Tema"
           data-class="nav-buttons"
           class="animate-pulse hidden invisible sm:block text-amber-400 dark:text-gray-300 bg-amber-200 hover:bg-amber-300 dark:bg-gray-600 dark:hover:bg-gray-700 p-3 rounded-full"
@@ -90,6 +100,7 @@
         <button
           id="layout-toggle-btn"
           title="Alterar Layout"
+          aria-label="layout-toggle"
           data-class="nav-buttons"
           class="hidden invisible sm:block text-gray-600 bg-white hover:bg-white/70 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 shadow-sm p-3 rounded-full"
         >
@@ -139,6 +150,7 @@
           <div class="relative">
             <button
               type="button"
+              aria-label="engine-selector"
               id="engine-selector-btn"
               class="p-3 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
             >
@@ -159,6 +171,7 @@
           />
           <button
             id="web-search-submit-btn"
+            aria-label="web-search-submit"
             type="submit"
             class="absolute right-0 top-0 h-full px-4 text-gray-500 hover:text-blue-600"
           >
@@ -182,6 +195,7 @@
         <div class="relative sm:hidden">
           <button
             id="mobile-menu-btn"
+            aria-label="mobile-menu"
             title="Mais opções"
             class="text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 p-3 rounded-full"
           >
@@ -211,6 +225,7 @@
         </div>
         <button
           id="import-btn"
+          aria-label="import-bookmarks"
           title="Importar Favoritos"
           data-class="nav-buttons"
           class="hidden invisible sm:block group text-gray-600 bg-white hover:bg-white/70 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 p-3 shadow-sm rounded-full"
@@ -235,6 +250,7 @@
         </button>
         <button
           id="export-btn"
+          aria-label="export-bookmarks"
           title="Exportar Favoritos"
           data-class="nav-buttons"
           class="hidden invisible sm:block group text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 dark:hover:bg-gray-700 hover:bg-white/70 p-3 shadow-sm rounded-full"
@@ -291,6 +307,7 @@
             />
             <button
               type="submit"
+              aria-label="save-article"
               class="bg-gray-600 text-white px-6 py-2 rounded-md hover:bg-gray-700 transition-colors font-medium"
             >
               Salvar Artigo
@@ -366,6 +383,7 @@
 
           <div id="dialog-actions" class="flex justify-end space-x-3">
             <button
+              aria-label="delete-bookmark"
               type="button"
               id="delete-bookmark-btn"
               class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors mr-auto hidden"
@@ -373,6 +391,7 @@
               Excluir
             </button>
             <button
+              aria-label="cancel-bookmark"
               type="button"
               id="cancel-bookmark-btn"
               class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
@@ -380,6 +399,7 @@
               Cancelar
             </button>
             <button
+              aria-label="save-bookmark"
               type="submit"
               class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
             >

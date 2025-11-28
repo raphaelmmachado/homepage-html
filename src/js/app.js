@@ -48,7 +48,13 @@ import {
 } from "./utils/dom.js";
 import { extractFaviconFromURL } from "./utils/helpers.js";
 import { saveData } from "./services/storage.js";
-import { tabKeySVG } from "./svgs/index.js";
+import {
+  tabKeySVG,
+  layoutIconSvg,
+  themeIconSvg,
+  ellipsisSVG,
+  addIconSVG,
+} from "./svgs/index.js";
 
 // --- FUNÇÕES DE LÓGICA ---
 export const showModal = (
@@ -81,66 +87,6 @@ export const showModal = (
   });
 };
 
-const createArticleElement = (article) => {
-  const element = document.createElement("div");
-  element.className =
-    "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow group relative";
-  // adicionar target="_blank" ao element <a> para abrir em nova guia
-  element.innerHTML = `
-      <div class="flex flex-col h-full">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 line-clamp-2">${
-          article.title
-        }</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 flex-grow">${
-          article.description
-        }</p>
-        <div class="flex items-center justify-between">
-          <span class="text-xs text-gray-500 dark:text-gray-500">${new Date(
-            article.dateAdded
-          ).toLocaleDateString("pt-BR")}
-          </span>
-          <div class="flex gap-2">
-            <a href="${article.url}"  rel="noopener noreferrer" 
-               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
-              Ler
-            </a>
-            <button class="remove-article-btn text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-              Remover
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-
-  // Add remove functionality
-  element
-    .querySelector(".remove-article-btn")
-    .addEventListener("click", async () => {
-      const confirmed = await showModal(
-        `Tem certeza que deseja remover este artigo?`,
-        "Confirmar Remoção",
-        [
-          { text: "Cancelar", class: "secondary", value: false },
-          { text: "Remover", class: "danger", value: true },
-        ]
-      );
-      if (confirmed) {
-        setArticles(articles.filter((a) => a.id !== article.id));
-        saveData();
-        renderArticles();
-      }
-    });
-
-  return element;
-};
-
-const renderArticles = () => {
-  articlesWrapper.innerHTML = "";
-
-  articles.forEach((article) => {
-    articlesWrapper.appendChild(createArticleElement(article));
-  });
-};
 const createSearchResultsElement = (
   searchTerm = "",
   option = { url: "", icon: "", placeholder: "" }
@@ -148,7 +94,7 @@ const createSearchResultsElement = (
   const seachEnginesSuggestions = document.createElement("a");
   seachEnginesSuggestions.href = `${option.url}${searchTerm}`;
   const span = `<span class="italic font-bold">${searchTerm}</span>`;
-  seachEnginesSuggestions.className = `flex items-center gap-3 my-3 p-1
+  seachEnginesSuggestions.className = `flex items-center gap-3 my-1 p-3
            rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors`;
   seachEnginesSuggestions.dataset.id = "search-option";
   seachEnginesSuggestions.innerHTML = `
@@ -218,7 +164,7 @@ export const render = (searchTerm = "") => {
     // SE NÃO ENCONTRAR RESULTADOS, SUGERIR OUTRAS PESQUISAS
     else {
       const notFoundMessage = document.createElement("p");
-      notFoundMessage.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Nenhum favorito encontrado.</p>`;
+      notFoundMessage.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Aperte ENTER para pesquisar ou... </p>`;
       searchResultsWrapper.appendChild(notFoundMessage);
 
       titleElement.textContent = `💭 Você quer`;
@@ -395,7 +341,7 @@ const createBookmarkElement = (bookmark) => {
                     </a>
                     <div class="flex items-center opacity-0 group-hover/item:opacity-100 transition-opacity">
                         <button class="edit-bookmark-btn p-1 text-gray-500 hover:text-blue-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                        ${ellipsisSVG}
 
                         </button>
                         
@@ -419,8 +365,8 @@ const createBookmarkElement = (bookmark) => {
                           bookmark.title ?? bookmark.name
                         }</span>
                     </a>
-                    <button class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ellipsis-vertical-icon lucide-ellipsis-vertical"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                    <button aria-label="edit-bookmark" class="edit-bookmark-btn absolute top-0 left-0 p-1 text-gray-500 hover:text-blue-600 opacity-0 group-hover/item:opacity-100 transition-opacity duration-200">
+                         ${ellipsisSVG}
                     </button>
                     `;
   }
@@ -466,21 +412,20 @@ const createBookmarkElement = (bookmark) => {
 };
 
 const createAddBookmarkBox = (containerId, hasBookmarks) => {
-  const addBookmarkBox = document.createElement("div");
+  const addBookmarkBox = document.createElement("button");
   addBookmarkBox.className = "add-bookmark-trigger";
-
+  addBookmarkBox.ariaLabel = "add-bookmark";
   addBookmarkBox.className = `flex p-2 items-center rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/50 cursor-pointer text-gray-500 transition-opacity duration-300
   ${currentLayout === "list" ? "" : "flex-col justify-center"}
   ${hasBookmarks ? "opacity-0 group-hover/category:opacity-100" : ""}`;
 
   if (currentLayout === "list") {
-    addBookmarkBox.innerHTML = `
-                    <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span class="text-sm">Adicionar</span>`;
+    addBookmarkBox.innerHTML = `<span class="mr-2">${addIconSVG}</span>
+                                <span class="text-sm">Adicionar</span>`;
   } else {
     addBookmarkBox.innerHTML = `
                     <div class="flex items-center justify-center w-8 h-8 rounded-md border-2 border-dashed border-gray-400 text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/50 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        ${addIconSVG}
                     </div>
                     <span class="mt-2 text-sm">Adicionar</span>`;
   }
@@ -530,6 +475,67 @@ const createAddCategoryBox = () => {
   return addContainerBox;
 };
 
+const createArticleElement = (article) => {
+  const element = document.createElement("div");
+  element.className =
+    "bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow group relative";
+  // adicionar target="_blank" ao element <a> para abrir em nova guia
+  element.innerHTML = `
+      <div class="flex flex-col h-full">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2 line-clamp-2">${
+          article.title
+        }</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 flex-grow">${
+          article.description
+        }</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-gray-500 dark:text-gray-500">${new Date(
+            article.dateAdded
+          ).toLocaleDateString("pt-BR")}
+          </span>
+          <div class="flex gap-2">
+            <a href="${article.url}"  rel="noopener noreferrer" 
+               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
+              Ler
+            </a>
+            <button aria-label="delete-article" class="remove-article-btn text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+              Remover
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+  // Add remove functionality
+  element
+    .querySelector(".remove-article-btn")
+    .addEventListener("click", async () => {
+      const confirmed = await showModal(
+        `Tem certeza que deseja remover este artigo?`,
+        "Confirmar Remoção",
+        [
+          { text: "Cancelar", class: "secondary", value: false },
+          { text: "Remover", class: "danger", value: true },
+        ]
+      );
+      if (confirmed) {
+        setArticles(articles.filter((a) => a.id !== article.id));
+        saveData();
+        renderArticles();
+      }
+    });
+
+  return element;
+};
+
+const renderArticles = () => {
+  articlesWrapper.innerHTML = "";
+
+  articles.forEach((article) => {
+    articlesWrapper.appendChild(createArticleElement(article));
+  });
+};
+
 // REDERIZA OS BOTÕES - TEMA, LAYOUT, ETC
 export const renderNavButtons = () => {
   navButtons.forEach((btn) => {
@@ -538,10 +544,13 @@ export const renderNavButtons = () => {
 };
 
 export const updateSearchEngineUI = () => {
-  engineSelectorBtn.innerHTML = searchEngines[activeSearchEngine].icon;
+  const { icon, placeholder, name } = searchEngines[activeSearchEngine];
+
+  engineSelectorBtn.innerHTML = icon;
   localStorage.setItem("my-homepage-search-engine", activeSearchEngine);
-  webSearchBar.placeholder = `${searchEngines[activeSearchEngine].placeholder}`;
-  if (searchEngines[activeSearchEngine].name === "Tradutor")
+  webSearchBar.placeholder = `${placeholder}`;
+
+  if (name === "Tradutor")
     webSearchBar.placeholder =
       "parametros: [Pesquisa] [idioma fonte (en)] [idioma destino (pt)]";
 };
@@ -593,9 +602,6 @@ export const populateMobileMenu = () => {
     });
     return item;
   };
-
-  const themeIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>`;
-  const layoutIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>`;
 
   const menuItems = [
     { text: "Alterar Tema", handler: toggleTheme, icon: themeIconSvg },
