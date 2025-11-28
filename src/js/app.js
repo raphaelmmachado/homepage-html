@@ -3,7 +3,6 @@ import {
   containers,
   bookmarks,
   articles,
-  activeContainerId,
   draggedContainerId,
   draggedBookmarkId,
   activeSearchEngine,
@@ -15,7 +14,6 @@ import {
   setActiveContainerId,
   setDraggedContainerId,
   setDraggedBookmarkId,
-  setActiveSearchEngine,
   setCurrentLayout,
   setCurrentTheme,
 } from "./state.js";
@@ -50,7 +48,7 @@ import {
 } from "./utils/dom.js";
 import { extractFaviconFromURL } from "./utils/helpers.js";
 import { saveData } from "./services/storage.js";
-import { tabKeySVG, youtubeSVG } from "./svgs/index.js";
+import { tabKeySVG } from "./svgs/index.js";
 
 // --- FUNÇÕES DE LÓGICA ---
 export const showModal = (
@@ -270,14 +268,14 @@ const createContainerElement = (container, containerBookmarks) => {
   );
   element.addEventListener("dragover", (e) => {
     e.preventDefault();
-    e.target.closest(".group/category").classList.add("drag-over");
+    e.target.closest(".group\\/category").classList.add("drag-over");
   });
   element.addEventListener("dragleave", (e) =>
-    e.target.closest(".group/category").classList.remove("drag-over")
+    e.target.closest(".group\\/category").classList.remove("drag-over")
   );
   element.addEventListener("drop", (e) => {
     e.preventDefault();
-    const targetContainer = e.target.closest(".group/category");
+    const targetContainer = e.target.closest(".group\\/category");
     targetContainer.classList.remove("drag-over");
     if (draggedBookmarkId) {
       const bookmark = bookmarks.find((b) => b.id === draggedBookmarkId);
