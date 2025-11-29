@@ -163,6 +163,8 @@ export const render = (searchTerm = "") => {
     }
     // SE NÃO ENCONTRAR RESULTADOS, SUGERIR OUTRAS PESQUISAS
     else {
+      setCurrentLayout(originalLayout);
+
       const notFoundMessage = document.createElement("p");
       notFoundMessage.innerHTML = `<p class="text-center text-sm text-gray-400 dark:text-gray-600 w-full py-8">Aperte ENTER para pesquisar ou... </p>`;
       searchResultsWrapper.appendChild(notFoundMessage);
